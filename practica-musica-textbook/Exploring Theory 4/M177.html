@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>M177</title>
+<meta name="generator" content="In5 v1.2.1">
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="assets/js/jquery.min.js"><\/script>')</script>
+<script type="text/javascript" src="assets/js/jquery.anythingslider.min.js"></script>
+<script src="assets/js/mediaelement-and-player.min.js"></script>
+<link rel="stylesheet" href="assets/css/mediaelementplayer.min.css" />
+<script type="text/javascript" src="assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.touchSwipe.min.js"></script>
+<link rel="stylesheet" href="assets/css/theme-minimalist-square.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+<script type="text/javascript" src="assets/js/highslide/highslide-full.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/js/highslide/highslide.css" />
+
+<script type="text/javascript">
+hs.graphicsDir = 'assets/js/highslide/graphics/';
+hs.outlineType = 'rounded-white';
+hs.wrapperClassName = 'draggable-header';
+hs.preserveContent = false;
+hs.dimmingOpacity = 0.75;
+</script>
+
+
+<script type="text/javascript" >
+	var touchEnabled = 'ontouchstart' in document.documentElement;
+	var clickEv = (touchEnabled) ? 'ontouchstart' : 'click';
+	var useSwipe = true;
+	var pageMode = 'h';
+	var multifile = false;
+	var arrowNav = true;
+	var nav;
+	
+	function toggleAudio(btn){
+		var elem = $(btn).siblings('audio')[0];
+		if(elem == undefined) elem = $(btn).siblings().find('audio')[0];
+		if(elem == undefined) return;
+		try{
+		var player = elem.player;
+		var media = player.media;
+		if(media.paused) player.play();
+		else player.pause();
+		} catch(e){}
+	}
+	
+	
+	$(function(){
+				if($('ul.thumbs').length) $('#in5footer').hide();
+		if($.colorbox) {
+			$('.lightbox').colorbox({iframe:true, width:"80%", height:"80%"});
+			$('.thumb').colorbox({maxWidth:"85%", maxHeight:"85%"});
+		}
+		$('img').bind('dragstart', function(event) { event.preventDefault(); });
+		$('.pageItem').each(function(){
+			if($(this).is('[onclick]')){
+				if(touchEnabled) {
+					//this.setAttribute('touchstart', this.getAttribute('onclick'));
+					//this.removeAttribute('onclick');
+				} else this.style.cursor = 'pointer';
+			}
+		});
+		if(multifile){
+			nav = { numPages:20,
+			current:parseInt(location.href.split('/').pop().split('.html').join('')),
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			to:function(n){
+				if(n <= 0 || n > nav.numPages) return;
+				var targPage = (n*.0001).toFixed(4).substr(2) + '.html';
+				location.assign(targPage);
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav){
+				$('nav:hidden, nav #backBtn, nav #nextBtn').show();
+				if(nav.current == 1) $('nav #backBtn').hide();
+				if(nav.current == nav.numPages) $('nav #nextBtn').hide();
+			}	
+		} else if(pageMode.indexOf('liquid') != -1) {
+			nav = { numPages:$('.pages .page').length,
+			current:1,
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			first:function(){nav.to(1);},
+			last:function(){nav.to(nav.numPages);},
+			to:function(n){
+				if(n < 1 || n > nav.numPages) return;
+				nav.current = n;
+				$('.pages .page:visible').hide();
+				$('.pages .page').eq(n-1).show();
+				if(n < 2) $('nav #backBtn:visible').hide();
+				else $('nav #backBtn:hidden').show();
+				if(n >= nav.numPages) $('nav #nextBtn:visible').hide();
+				else $('nav #nextBtn:hidden').show();
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav) $('nav:hidden').show();
+			nav.to(1); //init;
+		} else if($.hasOwnProperty('scrollTo')){
+			nav = { numPages:$('.pages .page').length,
+			back:function(ref){var targ=$(ref).parent('.page').prev()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			next:function(ref){var targ=$(ref).parent('.page').next()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			first:function(){$.scrollTo($('.page')[0], 500)},
+			last:function(){$.scrollTo($('.page')[nav.numPages-1], 500)},
+			to:function(n){$.scrollTo($('.page')[n-1], 500)} };
+		}
+				var sliderSettings = {
+			mode: pageMode,
+			theme: 'minimalist-square',
+			buildArrows: (!touchEnabled && arrowNav),
+    		buildNavigation: false,
+		    buildStartStop: false,
+		    hashTags: false,
+		    infiniteSlides: false,
+		    stopAtEnd: true,
+    		onInitialized: function(e, slider) {
+				nav = {
+					numPages:slider.pages,
+					current:slider.currentPage,
+					next:function(){slider.goForward();},
+					back:function(){slider.goBack();},
+					first:function(){this.to(1);},
+					last:function(){this.to(this.numPages)},
+					to:function(n){slider.gotoPage(n);}
+				};
+			},
+			
+		}
+		$('#slider').anythingSlider(sliderSettings);
+				if(useSwipe) {
+			var container = $('#container');
+			var vertMode = (pageMode.substr(0,1) == "v");
+			container.swipe({
+				swipe:function(event, direction, distance, duration, fingerCount) {
+					switch(direction) {
+						case "left":
+							if(!vertMode) nav.next();
+							break;
+						case "right":
+							if(!vertMode) nav.back();
+							break;
+						case "up":
+							if(vertMode) nav.next();
+							break;
+						case "down":
+							if(vertMode) nav.back();
+							break;		
+					}
+				}
+			});
+		}
+	});
+</script>
+
+</head>
+
+<body>
+<div id="container">
+      
+      <video width="876" height="472"controls="controls" autoplay="autoplay" >
+        <source src="assets/media/chap12movie12.7.mp4" type="video/mp4"/ >
+        <object type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap12movie12.7.mp4"/>
+          <img src="assets/images/item_1539.png" title="No video playback capabilities"/>
+        </object>
+      </video>
+
+<script type="text/javascript">$('video,audio').mediaelementplayer({pluginPath:'assets/media/',iPadUseNativeControls:true, iPhoneUseNativeControls:true, AndroidUseNativeControls:true});</script>
+
+</div>
+
+</body>
+</html>

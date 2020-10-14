@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Chapter 1</title>
+<meta name="generator" content="In5 v1.2.1">
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="assets/js/jquery.min.js"><\/script>')</script>
+<script type="text/javascript" src="assets/js/jquery.anythingslider.min.js"></script>
+<script src="assets/js/mediaelement-and-player.min.js"></script>
+<link rel="stylesheet" href="assets/css/mediaelementplayer.min.css" />
+<script type="text/javascript" src="assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.touchSwipe.min.js"></script>
+<link rel="stylesheet" href="assets/css/theme-minimalist-square.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+<script type="text/javascript" src="assets/js/highslide/highslide-full.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/js/highslide/highslide.css" />
+
+<script type="text/javascript">
+hs.graphicsDir = 'assets/js/highslide/graphics/';
+hs.outlineType = 'rounded-white';
+hs.wrapperClassName = 'draggable-header';
+hs.preserveContent = false;
+hs.dimmingOpacity = 0.5;
+</script>
+
+<script type="text/javascript" >
+	var touchEnabled = 'ontouchstart' in document.documentElement;
+	var clickEv = (touchEnabled) ? 'ontouchstart' : 'click';
+	var useSwipe = true;
+	var pageMode = 'h';
+	var multifile = false;
+	var arrowNav = true;
+	var nav;
+	
+	function toggleAudio(btn){
+		var elem = $(btn).siblings('audio')[0];
+		if(elem == undefined) elem = $(btn).siblings().find('audio')[0];
+		if(elem == undefined) return;
+		try{
+		var player = elem.player;
+		var media = player.media;
+		if(media.paused) player.play();
+		else player.pause();
+		} catch(e){}
+	}
+	
+	
+	$(function(){
+				if($('ul.thumbs').length) $('#in5footer').hide();
+		if($.colorbox) {
+			$('.lightbox').colorbox({iframe:true, width:"80%", height:"80%"});
+			$('.thumb').colorbox({maxWidth:"85%", maxHeight:"85%"});
+		}
+		$('img').bind('dragstart', function(event) { event.preventDefault(); });
+		$('.pageItem').each(function(){
+			if($(this).is('[onclick]')){
+				if(touchEnabled) {
+					//this.setAttribute('touchstart', this.getAttribute('onclick'));
+					//this.removeAttribute('onclick');
+				} else this.style.cursor = 'pointer';
+			}
+		});
+		if(multifile){
+			nav = { numPages:20,
+			current:parseInt(location.href.split('/').pop().split('.html').join('')),
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			to:function(n){
+				if(n <= 0 || n > nav.numPages) return;
+				var targPage = (n*.0001).toFixed(4).substr(2) + '.html';
+				location.assign(targPage);
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav){
+				$('nav:hidden, nav #backBtn, nav #nextBtn').show();
+				if(nav.current == 1) $('nav #backBtn').hide();
+				if(nav.current == nav.numPages) $('nav #nextBtn').hide();
+			}	
+		} else if(pageMode.indexOf('liquid') != -1) {
+			nav = { numPages:$('.pages .page').length,
+			current:1,
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			first:function(){nav.to(1);},
+			last:function(){nav.to(nav.numPages);},
+			to:function(n){
+				if(n < 1 || n > nav.numPages) return;
+				nav.current = n;
+				$('.pages .page:visible').hide();
+				$('.pages .page').eq(n-1).show();
+				if(n < 2) $('nav #backBtn:visible').hide();
+				else $('nav #backBtn:hidden').show();
+				if(n >= nav.numPages) $('nav #nextBtn:visible').hide();
+				else $('nav #nextBtn:hidden').show();
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav) $('nav:hidden').show();
+			nav.to(1); //init;
+		} else if($.hasOwnProperty('scrollTo')){
+			nav = { numPages:$('.pages .page').length,
+			back:function(ref){var targ=$(ref).parent('.page').prev()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			next:function(ref){var targ=$(ref).parent('.page').next()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			first:function(){$.scrollTo($('.page')[0], 500)},
+			last:function(){$.scrollTo($('.page')[nav.numPages-1], 500)},
+			to:function(n){$.scrollTo($('.page')[n-1], 500)} };
+		}
+				var sliderSettings = {
+			mode: pageMode,
+			theme: 'minimalist-square',
+			buildArrows: (!touchEnabled && arrowNav),
+    		buildNavigation: false,
+		    buildStartStop: false,
+		    hashTags: false,
+		    infiniteSlides: false,
+		    stopAtEnd: true,
+    		onInitialized: function(e, slider) {
+				nav = {
+					numPages:slider.pages,
+					current:slider.currentPage,
+					next:function(){slider.goForward();},
+					back:function(){slider.goBack();},
+					first:function(){this.to(1);},
+					last:function(){this.to(this.numPages)},
+					to:function(n){slider.gotoPage(n);}
+				};
+			},
+			
+		}
+		$('#slider').anythingSlider(sliderSettings);
+				if(useSwipe) {
+			var container = $('#container');
+			var vertMode = (pageMode.substr(0,1) == "v");
+			container.swipe({
+				swipe:function(event, direction, distance, duration, fingerCount) {
+					switch(direction) {
+						case "left":
+							if(!vertMode) nav.next();
+							break;
+						case "right":
+							if(!vertMode) nav.back();
+							break;
+						case "up":
+							if(vertMode) nav.next();
+							break;
+						case "down":
+							if(vertMode) nav.back();
+							break;		
+					}
+				}
+			});
+		}
+	});
+</script>
+
+<script type="text/javascript">
+hs.addEventListener(window, "load", function() {
+   hs.htmlExpand(null, {
+      src: 'assets/images/NaviSnap.jpg',
+      objectType: 'iframe',
+      width: 800,
+      height: 640,
+   });
+});
+</script>
+
+<style>
+
+a.toco:link			{ color: black; text-decoration: none; }
+a.toco:visited		{ color: black; text-decoration: none; }
+a.toco:hover		{ color: black; border-bottom: 1px dotted; }
+a.toco:active		{ color: black; border-bottom: 2px dotted; }
+
+</style>
+
+</head>
+
+<body>
+<div id="container">
+<ul class="pages" id="slider">
+
+<!--PAGE cover-->
+
+  <li id="cover" class="page">
+    <img class="pageItem" src="assets/images/item_0.png" style="left:29px;" alt="page item"/>
+    <img class="pageItem" src="assets/images/item_1.png" style="left:38px; top:71px;" alt="page item"/>
+   </li>
+ 
+<!--PAGE quotes-->
+
+  <li id="quotes" class="page">
+    <img class="pageItem" src="assets/images/sky1.png" style="left:25px; top:26px; " alt="page item"/>
+  </li>
+  
+<!--PAGE toc1-->
+
+  <li id="toc1" class="page">
+
+    <div class="pageItem" style="border:0px; border-style:solid; width:952px !important; height:656px !important; left:36px !important; top:36px !important;">
+
+      <div class="textColumn" style="width:48%; border:0px; border-style:solid;">
+
+        <p class="toc1"><a class="toco" href="C01.html#i">copyright</a></p>
+        <p class="toc1"><a class="toco" href="C01.html#ii">foreward</a></p>
+        <p class="toc1"><a class="toco" href="C01.html#intro">introduction</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C01.html#1">Chapter 1</a></p>
+        <p class="toc1"><a class="toco" href="C01.html#1">Notation of Pitch</a></p>
+        <p class="toc3"><a class="toco" href="C01.html#1">1.1 The Whole Step and Half Step</a></p>
+        <p class="toc3"><a class="toco" href="C01.html#6">1.2 The Staff and its Clefs</a></p>
+        <p class="toc3"><a class="toco" href="C01.html#12">1.3 Origins of the Black Keys</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C02.html#16">Chapter 2</a></p>
+        <p class="toc1"><a class="toco" href="C02.html#16">Notation of Rhythm</a></p>
+        <p class="toc3"><a class="toco" href="C02.html#16">2.1 The Beat and the Measure</a></p>
+        <p class="toc3"><a class="toco" href="C02.html#19">2.2 The Symbols of Rhythm Notation</a></p>
+        <p class="toc3"><a class="toco" href="C02.html#23">2.3 Meter</a></p>
+        <p class="toc3"><a class="toco" href="C02.html#30">2.4 Making Notation Count</a></p>
+
+
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%; border:0px; border-style:solid;">
+
+
+        <p class="toc2"><a class="toco" href="C03.html#36">Chapter 3</a></p>
+        <p class="toc1"><a class="toco" href="C03.html#36">Reading Rhythm</a></p>
+        <p class="toc3"><a class="toco" href="C03.html#36">3.1 Subdividing the Beat</a></p>
+        <p class="toc3"><a class="toco" href="C03.html#41">3.2 More on Metric Accents</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C04.html#46">Chapter 4</a></p>
+        <p class="toc1"><a class="toco" href="C04.html#46">Complex Rhythm</a></p>
+        <p class="toc3"><a class="toco" href="C04.html#46">4.1 Syncopation</a></p>
+        <p class="toc3"><a class="toco" href="C04.html#52">4.2 Triplets, Duplets, and Tuplets</a></p>
+        
+        <br /><br />
+
+        <p class="toc2"><a class="toco" href="C05.html#57">Chapter 5</a></p>
+        <p class="toc1"><a class="toco" href="C05.html#57">Intervals</a></p>
+        <p class="toc3"><a class="toco" href="C05.html#57">5.1 Naming Intervals</a></p>
+        <p class="toc3"><a class="toco" href="C05.html#62">5.2 Identifying Intervals</a></p>
+        <p class="toc3"><a class="toco" href="C05.html#68">5.3 Consonance and Dissonance</a></p>
+
+
+      </div>
+
+    </div>
+
+  </li>
+
+<!--PAGE toc2-->
+
+  <li id="toc2" class="page">
+
+    <div class="pageItem" style="border:0px; border-style:solid; width:952px !important; height:656px !important; left:36px !important; top:36px !important;">
+
+      <div class="textColumn" style="width:48%; border:0px; border-style:solid;">
+
+        
+        <p class="toc2"><a class="toco" href="C06.html#71">Chapter 6</a></p>
+        <p class="toc1"><a class="toco" href="C06.html#71">Scales & Key Signatures</a></p>
+        <p class="toc3"><a class="toco" href="C06.html#71">6.1 The Natural Minor Scale</a></p>
+        <p class="toc3"><a class="toco" href="C06.html#76">6.2 Key Signatures</a></p>
+        <p class="toc3"><a class="toco" href="C06.html#82">6.3 Alternate Forms of the Minor Scale</a></p>
+        <p class="toc3"><a class="toco" href="C06.html#86">6.4 Beyond the Major and Minor Scales</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C07.html#94">Chapter 7</a></p>
+        <p class="toc1"><a class="toco" href="C07.html#94">Triads</a></p>
+        <p class="toc3"><a class="toco" href="C07.html#94">7.1 Types of Triads</a></p>
+        <p class="toc3"><a class="toco" href="C07.html#101">7.2 Inverted Triads</a></p>
+        <p class="toc3"><a class="toco" href="C07.html#105">7.3 Voicing and Broken Chords</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C08.html#110">Chapter 8</a></p>
+        <p class="toc1"><a class="toco" href="C08.html#110">Adding to the Triad</a></p>
+        <p class="toc3"><a class="toco" href="C08.html#110">8.1 Seventh Chords</a></p>
+        <p class="toc3"><a class="toco" href="C08.html#120">8.2 Altered and Extended Chords</a></p>
+
+
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%; border:0px; border-style:solid;">
+
+        
+        <p class="toc2"><a class="toco" href="C09.html#126">Chapter 9</a></p>
+        <p class="toc1"><a class="toco" href="C09.html#126">Chord Progressions</a></p>
+        <p class="toc3"><a class="toco" href="C09.html#126">9.1 Chord Changes with the Primary Triad</a></p>
+        <p class="toc3"><a class="toco" href="C09.html#131">9.2 Extending the Dominant-Tonic Relationship</a></p>
+        
+        <br /><br />
+
+        <p class="toc2"><a class="toco" href="C10.html#139">Chapter 10</a></p>
+        <p class="toc1"><a class="toco" href="C10.html#139">Building Melody</a></p>
+        <p class="toc3"><a class="toco" href="C10.html#139">10.1 Melodic Movement</a></p>
+        <p class="toc3"><a class="toco" href="C10.html#144">10.2 The Phrase</a></p>
+        <p class="toc3"><a class="toco" href="C10.html#149">10.3 Harmonic Implications of Melody</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C11.html#155">Chapter 11</a></p>
+        <p class="toc1"><a class="toco" href="C11.html#155">Developing Melody</a></p>
+        <p class="toc3"><a class="toco" href="C11.html#155">11.1 The Motive</a></p>
+        <p class="toc3"><a class="toco" href="C11.html#164">11.2 Melodic Transformations</a></p>
+
+
+      </div>
+
+    </div>
+
+  </li>
+  
+<!--PAGE toc3-->
+
+  <li id="toc3" class="page">
+
+    <div class="pageItem" style="border:0px; border-style:solid; width:952px !important; height:656px !important; left:36px !important; top:36px !important;">
+
+      <div class="textColumn" style="width:48%; border:0px; border-style:solid;">
+
+        
+        <p class="toc2"><a class="toco" href="C12.html#170">Chapter 12</a></p>
+        <p class="toc1"><a class="toco" href="C12.html#170">Elements of Form</a></p>
+        <p class="toc3"><a class="toco" href="C12.html#170">12.1 Binary and Ternary Forms</a></p>
+        <p class="toc3"><a class="toco" href="C12.html#175">12.2 Other Forms of Organization</a></p>
+        <p class="toc3"><a class="toco" href="C12.html#180">12.3 Large Scale Works</a></p>
+        
+        <br /><br />
+        
+        <p class="toc2"><a class="toco" href="C13.html#186">Chapter 13</a></p>
+        <p class="toc1"><a class="toco" href="C13.html#186">Voice-Leading</a></p>
+        <p class="toc3"><a class="toco" href="C13.html#186">13.1 Musical Textures</a></p>
+        <p class="toc3"><a class="toco" href="C13.html#190">13.2 Principles of Voice-Leading</a></p>
+        <p class="toc3"><a class="toco" href="C13.html#194">13.3 Nonharmonic Tones</a></p>
+
+
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%; border:0px; border-style:solid;">
+
+        
+        <p class="toc2"><a class="toco" href="C14.html#203">Chapter 14</a></p>
+        <p class="toc1"><a class="toco" href="C14.html#203">Expression Marks</a></p>
+        <p class="toc3"><a class="toco" href="C14.html#203">14.1 Dynamics and Articulation Markings</a></p>
+        <p class="toc3"><a class="toco" href="C14.html#210">14.2 Tempo Markings</a></p>
+        
+        <br /><br />
+
+        <p class="toc2"><a class="toco" href="C15.html#214">Chapter 15</a></p>
+        <p class="toc1"><a class="toco" href="C15.html#214">The Physics of Music</a></p>
+        <p class="toc3"><a class="toco" href="C15.html#214">15.1 Partials</a></p>
+        <p class="toc3"><a class="toco" href="C15.html#219">15.2 Temperament</a></p>
+
+        <br /><br />
+
+        <p class="toc2"><a class="toco" href="keywords.html#214">Index</a></p>
+
+        
+
+
+      </div>
+
+    </div>
+
+    <div class="pageItem" style="left:590px; top:696px; "">
+<a href="C01.html" class="button V14" style="display: block; margin-left: auto; margin-right: auto; width: 320px; ">Continue &nbsp;&nbsp;&nbsp; >></a>
+    </div>
+
+  </li>
+
+</ul>
+
+<script type="text/javascript">$('video,audio').mediaelementplayer({pluginPath:'assets/media/',iPadUseNativeControls:true, iPhoneUseNativeControls:true, AndroidUseNativeControls:true});</script>
+
+<div class="NaviBar"><img src="assets/images/NaviBar.png"></div>
+<div class="NaviBarText">
+		  <a class="NaviBarLink" href="TOC.html#toc1">Contents</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#ii">Foreward</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#intro">Introduction</a>
+		  &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#1">1</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C02.html">2</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C03.html">3</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C04.html">4</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C05.html">5</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C06.html">6</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C07.html">7</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C08.html">8</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C09.html">9</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C10.html">10</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C11.html">11</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C12.html">12</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C13.html">13</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C14.html">14</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C15.html">15</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="glossary.html">Glossary</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="keywords.html">Index</a>
+</div>
+
+</div>
+
+</body>
+</html>

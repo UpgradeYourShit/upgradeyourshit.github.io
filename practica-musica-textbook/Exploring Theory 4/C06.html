@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Chapter 6</title>
+<meta name="generator" content="In5 v1.2.1">
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="assets/js/jquery.min.js"><\/script>')</script>
+<script type="text/javascript" src="assets/js/jquery.anythingslider.min.js"></script>
+<script src="assets/js/mediaelement-and-player.min.js"></script>
+<link rel="stylesheet" href="assets/css/mediaelementplayer.min.css" />
+<script type="text/javascript" src="assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.touchSwipe.min.js"></script>
+<link rel="stylesheet" href="assets/css/theme-minimalist-square.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+
+<script type="text/javascript" >
+	var touchEnabled = 'ontouchstart' in document.documentElement;
+	var clickEv = (touchEnabled) ? 'ontouchstart' : 'click';
+	var useSwipe = true;
+	var pageMode = 'h';
+	var multifile = false;
+	var arrowNav = true;
+	var nav;
+	
+	function toggleAudio(btn){
+		var elem = $(btn).siblings('audio')[0];
+		if(elem == undefined) elem = $(btn).siblings().find('audio')[0];
+		if(elem == undefined) return;
+		try{
+		var player = elem.player;
+		var media = player.media;
+		if(media.paused) player.play();
+		else player.pause();
+		} catch(e){}
+	}
+	
+	
+	$(function(){
+				if($('ul.thumbs').length) $('#in5footer').hide();
+		if($.colorbox) {
+			$('.lightbox').colorbox({iframe:true, width:"80%", height:"80%"});
+			$('.thumb').colorbox({maxWidth:"85%", maxHeight:"85%"});
+		}
+		$('img').bind('dragstart', function(event) { event.preventDefault(); });
+		$('.pageItem').each(function(){
+			if($(this).is('[onclick]')){
+				if(touchEnabled) {
+					//this.setAttribute('touchstart', this.getAttribute('onclick'));
+					//this.removeAttribute('onclick');
+				} else this.style.cursor = 'pointer';
+			}
+		});
+		if(multifile){
+			nav = { numPages:20,
+			current:parseInt(location.href.split('/').pop().split('.html').join('')),
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			to:function(n){
+				if(n <= 0 || n > nav.numPages) return;
+				var targPage = (n*.0001).toFixed(4).substr(2) + '.html';
+				location.assign(targPage);
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav){
+				$('nav:hidden, nav #backBtn, nav #nextBtn').show();
+				if(nav.current == 1) $('nav #backBtn').hide();
+				if(nav.current == nav.numPages) $('nav #nextBtn').hide();
+			}	
+		} else if(pageMode.indexOf('liquid') != -1) {
+			nav = { numPages:$('.pages .page').length,
+			current:1,
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			first:function(){nav.to(1);},
+			last:function(){nav.to(nav.numPages);},
+			to:function(n){
+				if(n < 1 || n > nav.numPages) return;
+				nav.current = n;
+				$('.pages .page:visible').hide();
+				$('.pages .page').eq(n-1).show();
+				if(n < 2) $('nav #backBtn:visible').hide();
+				else $('nav #backBtn:hidden').show();
+				if(n >= nav.numPages) $('nav #nextBtn:visible').hide();
+				else $('nav #nextBtn:hidden').show();
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav) $('nav:hidden').show();
+			nav.to(1); //init;
+		} else if($.hasOwnProperty('scrollTo')){
+			nav = { numPages:$('.pages .page').length,
+			back:function(ref){var targ=$(ref).parent('.page').prev()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			next:function(ref){var targ=$(ref).parent('.page').next()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			first:function(){$.scrollTo($('.page')[0], 500)},
+			last:function(){$.scrollTo($('.page')[nav.numPages-1], 500)},
+			to:function(n){$.scrollTo($('.page')[n-1], 500)} };
+		}
+				var sliderSettings = {
+			mode: pageMode,
+			theme: 'minimalist-square',
+			buildArrows: (!touchEnabled && arrowNav),
+    		buildNavigation: false,
+		    buildStartStop: false,
+		    hashTags: false,
+		    infiniteSlides: false,
+		    stopAtEnd: true,
+    		onInitialized: function(e, slider) {
+				nav = {
+					numPages:slider.pages,
+					current:slider.currentPage,
+					next:function(){slider.goForward();},
+					back:function(){slider.goBack();},
+					first:function(){this.to(1);},
+					last:function(){this.to(this.numPages)},
+					to:function(n){slider.gotoPage(n);}
+				};
+			},
+			
+		}
+		$('#slider').anythingSlider(sliderSettings);
+				if(useSwipe) {
+			var container = $('#container');
+			var vertMode = (pageMode.substr(0,1) == "v");
+			container.swipe({
+				swipe:function(event, direction, distance, duration, fingerCount) {
+					switch(direction) {
+						case "left":
+							if(!vertMode) nav.next();
+							break;
+						case "right":
+							if(!vertMode) nav.back();
+							break;
+						case "up":
+							if(vertMode) nav.next();
+							break;
+						case "down":
+							if(vertMode) nav.back();
+							break;		
+					}
+				}
+			});
+		}
+	});
+</script>
+
+</head>
+
+<body>
+<div id="container">
+<ul class="pages" id="slider">
+
+<!--PAGE 71-->
+
+  <li id="71" class="page">
+    <div id="item679" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="BasicParagraph">Chapter 6</p>
+        <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="ChapterTitle">Scales &amp; Key Signatures</p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraphLarge">The major scale illustrated in Chapter 1<br/>is just one way of dividing the octave; arrange the steps differently and the resulting scale will have a different character. Most classical and popular music is built on major and minor scales, but there are others, both traditional<br/>and artificial, found in folk music and modern composed works.</p>
+        <br/>
+        <p class="BasicCaption">From the autograph manuscript of Debussy’s, <span class="Italic">La Mer</span> (1905)
+        <br /><br />
+		<span class="Italic">“The tonal scale must be enriched by other scales.” <br />
+		– Claude Debussy</span>
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_680.png" style="left:524px; top:37px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 72-->
+
+  <li id="72" class="page">
+    <div id="item681" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">72</p>
+    </div>
+    <div id="item682" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 1</p>
+      <p style="width:40%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      <p class="XLargeText">The Natural Minor Scale</p>
+    </div>
+    <div id="item683" class="pageItem" style="left:36px; top:133px; ">
+      <p class="BasicParagraph">The major scale has a close relation in the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">natural minor<span class="custom info">
+	  <em>Natural Minor</em> 
+	  The pattern of whole steps and half steps that results when playing the piano’s white keys, beginning on the note A:
+	  <br /><br />
+	  <strong class="Bold">W H W W H W W</strong>
+	  <br /><br />
+	  The natural minor scale beginning on A uses the same notes as the C major scale, but the pattern of whole steps and half steps is changed.
+	  </span></a>.
+	  <!--TOOL TIP END-->
+      
+      The same white key<br/>pattern used for the major scale produces the natural minor if you begin with<br/>A instead of C: <span class="Bold">A B C D E F G A</span>. Put another way, you can sing a natural minor<br/>scale with the familiar solmization syllables by beginning with <span class="Italic">La</span> instead of <span class="Italic">Do:<br/>La, Ti, Do, Re, Mi, Fa, Sol, La</span>. The natural minor scale can be expressed as the<br/>following pattern of whole and half steps: <span class="Bold">W H W W H W W</span>, as in the ladder<br/>shown at right.
+      </p>
+      <p class="SubChapter">Scale Degrees</p>
+      <p class="BasicParagraph">Each of the seven notes of a major or minor scale has a name. These names will be convenient when describing scales and later will be used in harmony, too, so this is<br/>a good moment to learn them.
+      </p>
+      <p class="BasicParagraph">The first note of any scale is the <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">tonic.<span class="custom info" style="width:360px; ">
+        <em>Tonic</em> 
+        The first note of a diatonic scale or a chord built on the first degree of the scale. In traditional harmony it provides the tonal center of a composition; melodies come to rest on the tonic, and the chord built on the tonic provides a sense of completion. </span></a><!--TOOL TIP END-->
+
+      Next in ascending order come the<br/>
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">supertonic<span class="custom info">
+	  <em>Supertonic</em> 
+	  The name of the second scale degree or a chord built on it.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">mediant<span class="custom info">
+	  <em>Mediant</em> 
+	  The third scale degree or the chord built on it.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">subdominant<span class="custom info">
+	  <em>Subdominant</em> 
+	  The name of the fourth scale degree<br/>or the chord built on it. It’s one of the three most important scale tones<br/>along with the tonic and dominant.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">dominant<span class="custom info">
+	  <em>Dominant</em> 
+	  The fifth scale degree or a chord built on it. The dominant is one of the three most important scale tones along with the tonic and subdominant.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">submediant<span class="custom info">
+	  <em>Submediant</em> 
+	  The name of the sixth scale tone or the chord built on it.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+      
+      and
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">subtonic<span class="custom info">
+	  <em>Subtonic</em> 
+	  The name of the seventh scale degree when it’s a whole step below the tonic, as it is in the natural minor scale. Otherwise, the seventh scale degree is called the leading tone.
+	  </span></a>,
+	  <!--TOOL TIP END-->
+
+      <br/>or
+
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">leading tone<span class="custom info">
+	  <em>Leading Tone</em> 
+	  The seventh scale degree when it’s a half step below the tonic, as it is in the major, harmonic minor, or melodic minor scale. In the natural minor scale, the seventh degree is called the subtonic.
+	  </span></a>
+	  <!--TOOL TIP END--> 
+      
+      (if a half step below tonic, see below).
+      </p>
+      <p class="BasicParagraph">The three most important notes of the scale are the tonic, the dominant, and the subdominant, which for historical and acoustical reasons form something like foundation posts for the scale: the dominant is a fifth above the tonic; the<br/>subdominant a fifth below. The mediant, the third degree of the scale, gets its name from being halfway between the tonic and the dominant; in a sense it mediates<br/>between them. The submediant mediates between the tonic and the subdominant. Finally there’s the supertonic, just above the tonic, and the subtonic, just below it. When the subtonic is only a half step below the tonic, as it is in the major scale, it’s called the leading tone because it seems to lead back to the tonic.
+      </p>
+    </div>
+
+    <img class="pageItem" src="assets/images/item_685.png" style="left:650px; top:73px; " alt="page item"/>
+    <div id="item686" class="pageItem" style="left:666px; top:85px; ">
+      <p class="ActivityHeader">Movie 6.1&nbsp;&nbsp;The major and minor scales</p>
+    </div>
+    <div id="item687" class="pageItem" style="left:673px; top:114px; " alt="page item">
+      <video width="276" height="488" controls="controls" poster="assets/images/item_687.png">
+        <source src="assets/media/chap6movie6.1.mp4" type="video/mp4"/>
+        <object width="276" height="488" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.1.mp4"/>
+          <img src="assets/images/item_687.png" width="276" height="488" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <div id="item688" class="pageItem" style="left:666px; top:612px; ">
+      <p class="ActivityBox">The natural minor scale follows the pattern of steps found on the piano’s white keys starting on A instead of C.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 73-->
+
+  <li id="73" class="page">
+    <div id="item689" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">73</p>
+    </div>
+    <div id="item690" class="pageItem" style="left:36px; top:37px; ">
+      <p class="BasicParagraph">The logic behind the scale degree names is clear if you view a scale with its tonic in the center:
+      </p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="SubChapter">Relative Minor And Relative Major</p>
+      <p class="BasicParagraph">Because the minor scale beginning on A uses the same notes as the major scale on C, we say that the A minor scale is the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">relative&nbsp;minor<span class="custom info">
+	  <em>Relative Minor</em> 
+	  The minor scale that shares the<br/>same key signature with a major scale. The relative minor of any major scale begins a major sixth above the tonic of the major scale. For example, c minor is the relative minor of E♭ major – both have a key signature of three flats.
+	  </span></a>
+	  <!--TOOL TIP END-->    
+
+      of C major, and C major is the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">relative major<span class="custom info">
+	  <em>Relative Major</em> 
+	  The major scale that shares the<br/>same key signature with a minor scale. The relative major of any minor scale begins a minor third above the tonic of the minor scale. For example, A major is the relative major of F♯ minor – both have a key signature of three sharps.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      of the A minor scale. In the C major scale A is <span class="Italic">La</span>, the sixth or submediant degree, and similarly, every major scale, no matter what note it starts on, has a relative minor scale that begins with<br/>its submediant and which shares the same set of pitches and uses the same sharps or flats. Since the submediant is either a major sixth above or a minor third below the tonic, you can also find the relative minor by counting down a minor third from the tonic<br/>note of a major scale.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_691.png" style="left:223px; top:78px; " alt="page item"/>
+    <div id="item692" class="pageItem" style="left:240px; top:89px; ">
+      <p class="ActivityHeader">Figure 6.1&nbsp;&nbsp;Scale degrees</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_693.png" style="left:240px; top:118px; " alt="page item"/>
+    <div id="item694" class="pageItem" style="left:240px; top:321px; ">
+      <p class="ActivityBox">The A minor scale shown with its tonic in the center. When the seventh scale degree is a whole step below the tonic, as it is in the natural minor scale, it’s called the <span class="Italic">subtonic</span>. When it’s a half step below the tonic, as in the major scale, it’s called the <span class="Italic">leading tone</span>.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 74-->
+
+  <li id="74" class="page">
+    <div id="item695" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">74</p>
+    </div>
+    <div id="item696" class="pageItem" style="left:36px; top:95px; ">
+      <p class="BasicParagraph">For example, to find the relative minor of a major scale beginning on F♯, you need to count downward from F♯ to D♯:<br/>D sharp minor is the relative minor of<br/>F sharp major. Conversely, you can find the relative major of a minor scale by counting up a minor third from the tonic.
+      </p>
+      <p class="SubChapter">Parallel Minor And Major</p>
+      <p class="BasicParagraph">The
+      
+      <span class="Bold"></span>
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">parallel minor<span class="custom info">
+	  <em>Parallel Minor</em> 
+	  A scale with the same tonic, but a different key signature as its parallel major. The F minor scale, for example, is the parallel minor of F major – they share the same tonic, but the key signature for F minor has four flats and the key signature for F major has one flat.
+	  </span></a>
+	  <!--TOOL TIP END-->
+
+      of a major scale is the minor scale beginning on the same tonic. Parallel major and minor scales<br/>do not share the same number of flats or sharps since they begin on the same tonic but use a different pattern of whole steps and half steps. Again the example shows the “natural” form of the minor scale, which you can see uses several flats in this case. The natural minor is not necessarily made of naturals; it’s called that because<br/>it uses only the unaltered tones of its relative major scale.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_697.png" style="left:371px; top:63px; " alt="page item"/>
+    <div id="item698" class="pageItem" style="left:387px; top:76px; ">
+      <p class="ActivityHeader">Movie 6.2<br/>Major scale and its relative minor</p>
+    </div>
+    <div id="item699" class="pageItem" style="left:388px; top:301px; ">
+      <p class="ActivityBox">The relative minor scale begins on the submediant (sixth) degree of its relative major.
+      </p>
+    </div>
+    <div id="item700" class="pageItem" style="left:387px; top:125px; " alt="page item">
+      <video width="572" height="168" controls="controls" poster="assets/images/item_700.png">
+        <source src="assets/media/chap6movie6.2.mp4" type="video/mp4"/>
+        <object width="572" height="168" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.2.mp4"/>
+          <img src="assets/images/item_700.png" width="572" height="168" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_701.png" style="left:369px; top:355px; " alt="page item"/>
+    <div id="item702" class="pageItem" style="left:383px; top:369px; ">
+      <p class="ActivityHeader">Movie 6.3&nbsp;&nbsp;Parallel minor versus relative minor</p>
+    </div>
+    <div id="item703" class="pageItem" style="left:384px; top:606px; ">
+      <p class="ActivityBox">
+      The parallel minor of C major is C minor.<br/>The relative major of C minor is E flat major.
+      </p>
+    </div>
+    <div id="item704" class="pageItem" style="left:383px; top:398px; " alt="page item">
+      <video width="580" height="200" controls="controls" poster="assets/images/item_704.png">
+        <source src="assets/media/chap6movie6.3.mp4" type="video/mp4"/>
+        <object width="580" height="200" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.3.mp4"/>
+          <img src="assets/images/item_704.png" width="580" height="200" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+
+<!--PAGE 75-->
+
+  <li id="75" class="page">
+    <div id="item705" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">75</p>
+    </div>
+    <div id="item706" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item707" class="pageItem" style="left:55px; top:57px; ">
+      <p class="ReviewHeader">Review 6.1</p>
+      
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. The natural minor scale corresponds to the pattern of white keys beginning on A, making the pattern<br />
+        <span class="Bold">W H W W H W W</span>.
+        </p>
+        <p class="ReviewText">2. The degrees of the scale are named, in ascending order, tonic, supertonic, mediant, subdominant, dominant, submediant, subtonic (when a whole step below the tonic) or leading tone (when a half step below the tonic).
+        </p>
+        <p class="ReviewText">3. The relative minor of a major scale starts on the major scale’s submediant (6th) degree. The relative minor uses the same notes as its relative major. The relative minor of D major is B minor, for instance. Both scales use the notes,
+        D &nbsp;E &nbsp;F♯&nbsp;G &nbsp;A &nbsp;B &nbsp;C♯&nbsp;D, but have a different tonic.
+        </p>
+        <p class="ReviewText">4. The parallel minor and major scales share the same tonic, but do not use the same notes. The parallel major of D minor, for instance, is D major.<br/>D minor is spelled: D &nbsp;E &nbsp;F &nbsp;G &nbsp;A &nbsp;B♭&nbsp;C &nbsp; D.<br/>(See above for D major).
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_708.png" style="left:539px; top:292px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_709.png" style="left:548px; top:302px; " alt="page item"/>
+    <div id="item710" class="pageItem" style="left:624px; top:321px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.1</p>
+    </div>
+
+    <div id="item712" class="pageItem" style="left:568px; top:355px; padding-left: 12px; text-indent: -10px; ">
+      <p class="ActivityBox">• <span class="Italic">Relative Keys:</span> Provide the relative major or minor for<br/>the given key.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_713.png" style="left:594px; top:318px; " alt="page item"/>
+  </li>
+
+<!--PAGE 76-->
+
+  <li id="76" class="page">
+    <div id="item714" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">76</p>
+    </div>
+    <div id="item715" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 2</p>
+      
+      <p style="width:25%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <p class="XLargeText">Key Signatures</p>
+    </div>
+    <div id="item716" class="pageItem" style="left:36px; top:147px; ">
+      <p class="BasicParagraph">When writing the notes of the E flat major and C minor scales for Movie 6.3 it was necessary to include several flats. E flat major and C minor don’t use E; they use E♭, and also the flat forms of<br/>B and A. Rather than write the flats every time those notes appear, it’s customary to show them at the left of the page in a
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">key signature<span class="custom info">
+	  <em>Key Signature</em> 
+	  A grouping of flat or sharp symbols placed at the beginning of each staff to indicate the key of the piece. The key signature tells you which notes are to be flatted or sharped throughout. Flats and sharps are always added in the same order, so a key signature with three sharps, for instance, will always indicate F♯, C♯, and G♯.
+	  </span></a>.
+	  <!--TOOL TIP END-->
+      
+      The key signature of three flats tells the reader that any B, E, or A in the music is to<br/>be played as a flat unless otherwise indicated. To a musician that signature would identify the piece as one that<br/>uses either the E flat major scale or the C minor scale: the piece would have to be either in the key of E flat, or the key of C minor. The choice would depend on the nature of the music and its harmony. Figure 6.2 shows how our three scales from the preceding example look with their key signatures.
+      </p>
+    </div>
+
+    <img class="pageItem" src="assets/images/item_718.png" style="left:365px; top:100px; " alt="page item"/>
+    <div id="item719" class="pageItem" style="left:378px; top:110px; ">
+      <p class="ActivityHeader">Figure 6.2&nbsp;&nbsp;Using key signatures</p>
+    </div>
+    <div id="item720" class="pageItem" style="left:379px; top:321px; ">
+      <p class="ActivityBox">
+      Relative keys share the same key signature.<br />
+      Parallel keys share the same tonic.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_721.png" style="left:379px; top:137px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_722.png" style="left:339px; top:461px; " alt="page item"/>
+    <div id="item723" class="pageItem" style="left:354px; top:475px; ">
+      <p class="ActivityHeader">Movie 6.4&nbsp;&nbsp;A melody written with and without a key signature</p>
+    </div>
+    <div id="item724" class="pageItem" style="left:354px; top:641px; ">
+      <p class="ActivityBox">Without the key signature, every instance of B♭, E♭ and A♭ needs a flat sign.
+      </p>
+    </div>
+    <div id="item725" class="pageItem" style="left:354px; top:503px; " alt="page item">
+      <video width="596" height="128" controls="controls" poster="assets/images/item_725.png">
+        <source src="assets/media/chap6movie6.4.mp4" type="video/mp4"/>
+        <object width="596" height="128" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.4.mp4"/>
+          <img src="assets/images/item_725.png" width="596" height="128" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <div id="item726" class="pageItem" style="left:366px; top:382px; ">
+      <p class="BasicParagraph">A key signature is printed at the beginning of each line and stays in effect until canceled by another one. Whenever you write a clef you should follow it by the key signature.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 77-->
+
+  <li id="77" class="page">
+    <div id="item727" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">77</p>
+    </div>
+    <div id="item728" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Traditional key signatures are composed either of flats or sharps, not both, and the flats and sharps are always added in the same order: the first flat is always B♭ and the first sharp is always F♯. Subsequent flats are each a fifth lower than the previous one and subsequent sharps are each a fifth higher than the previous one (the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">circle of fifths<span class="custom info">
+	  <em>Circle of Fifths</em> 
+	  A visual representation of the relationship between all of the major and minor keys. It can help you determine the key signature for each major key and its relative minor.<br/>At the top of the circle is C major with no flats or sharps. Moving clockwise, each tonic rises a fifth, and a sharp is added to the key signature. Going in the opposite direction from C, each tonic drops a fifth, and a flat is added to the signature.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      diagram shown in Figure 6.4 illustrates this principle). This helps you to quickly identify the pitches – if a key has only two sharps in its signature they will always be F♯ and C♯ – you don’t need to look at their placement in the staff.
+      </p>
+      <p class="BasicParagraph">The flats or sharps are displayed in a standard arrangement to make them easier to recognize. Here are all fifteen signatures and their keys, as drawn in the treble and bass clefs.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_729.png" style="left:167px; top:580px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_730.png" style="left:176px; top:590px; " alt="page item"/>
+
+    <div id="item732" class="pageItem" style="left:192px; top:639px; ">
+      <p class="BasicParagraph">
+      • <span class="Italic">Building Key Signatures:</span> Provide the correct number of flats or sharps for the given key.<br />
+      • <span class="Italic">Choosing Key Signatures:</span> Choose the appropriate key signature for each scale.
+      </p>
+    </div>
+    <div id="item733" class="pageItem" style="left:349px; top:605px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.2</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_734.png" style="left:319px; top:601px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_735.png" style="left:89px; top:222px; " alt="page item"/>
+    <div id="item736" class="pageItem" style="left:100px; top:234px; ">
+      <p class="ActivityHeader">Figure 6.3&nbsp;&nbsp;Table of key signatures showing both major and minor keys</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_737.png" style="left:100px; top:263px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 78-->
+
+  <li id="78" class="page">
+    <div id="item738" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">78</p>
+    </div>
+    <div id="item739" class="pageItem" style="left:53px; top:54px; ">
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item740" class="pageItem" style="left:99px; top:133px; ">
+      <p class="ActivityHeader">Figure 6.4&nbsp;&nbsp;The Circle of Fifths</p>
+      <p class="BasicParagraph">Moving clockwise from C, as each tonic rises a<br/>fifth another sharp is added to the key signature. Going in the other direction from C, a flat is added to the key signature each time the tonic drops a fifth. This simple but elegant principle is traditionally represented in the <span class="Italic">circle of fifths</span> shown at right.<br/>The circular design helps to show how the two series begin to overlap with their enharmonic equivalents after reaching five sharps or flats, but the same information can as easily be represented by the table of flat keys and sharp keys below. Lower-case letters are used to refer to the minor keys.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_741.png" style="left:205px; top:517px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_742.png" style="left:515px; top:69px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 79-->
+
+  <li id="79" class="page">
+    <div id="item743" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">79</p>
+    </div>
+    <div id="item744" class="pageItem" style="left:36px; top:36px; ">
+      <p class="SubChapter">Identifying Keys From The Signature</p>
+      <p class="BasicParagraph">Usually students just memorize the signatures: one sharp means G major or E minor; two means D major or B minor, etc. But there is a shortcut to identifying a key from its signature.
+      </p>
+      <p class="BasicParagraph">Notice that the last sharp in a key signature is always the leading tone (seventh degree) of the major scale for that key. In Figure 6.5, the last sharp in the signature is D♯, which tells us that D♯ is the leading tone of the major<br/>key using this signature. The major key tonic is a half step higher: E. This signature must be for E major or its relative minor, C minor.
+      </p>
+      <p class="BasicParagraph">In flat signatures, the last flat is the fourth degree of the corresponding major scale. In Figure 6.5, the last flat is D♭, so the major scale using this signature is four scale steps downward: A♭. The piece must be either in A♭ major or its relative minor, F (or: since the flats are a fourth apart,<br/>if there’s more than one flat, the next-to-last is the tonic).<br/>Of course, both of these methods require that you know whether the piece is major or minor!
+      </p>
+      <p class="BasicParagraph">For now you can generally just check the last note of a melody, which is usually the tonic: a piece with a two-sharp key signature that ends on B is probably in B minor rather than D major. Once you learn chords there will be no doubt of the key, but that comes later.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_745.png" style="left:476px; top:536px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_746.png" style="left:485px; top:546px; " alt="page item"/>
+    <div id="item747" class="pageItem" style="left:494px; top:592px; ">
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item748" class="pageItem" style="left:512px; top:603px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Tonics:</span> Identify the tonic scale degree from the key signature.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_749.png" style="left:547px; top:564px; " alt="page item"/>
+    
+    <div id="item750" class="pageItem" style="left:542px; top:567px; top:593px; padding-left: 35px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.3</p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_750.png" style="left:515px; top:77px; " alt="page item"/>
+    <div id="item751" class="pageItem" style="left:525px; top:87px; ">
+      <p class="ActivityHeader">Figure 6.5&nbsp;&nbsp;Identifying a key from its key signature</p>
+    </div>
+    <div id="item752" class="pageItem" style="left:525px; top:392px; ">
+      <p class="BasicParagraph">The last sharp of a key signature is a half step below<br/>the major key tonic. The last flat is a fourth above the<br/>major key tonic. (Since the last flat is a fourth above<br/>the previous flat, you can also look at the second to<br/>last flat to get the tonic.)
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_753.png" style="left:525px; top:116px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 80-->
+
+  <li id="80" class="page">
+    <div id="item754" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">80</p>
+    </div>
+    <div id="item755" class="pageItem" style="left:36px; top:56px; ">
+      <p class="SubChapter">Accidentals in the Context of a Key</p>
+      <p class="BasicParagraph">If you see an accidental — a written sharp, flat, natural, double sharp, or double flat not in the key signature — it means that the changed note is not part of the prevailing major scale or natural minor scale, since<br/>the key signature supplies all the scale notes for major and natural minor. Accidentals apply only to the pitch they precede — not to other octaves of the same pitch class — and they last until the end of the measure.<br/>If the altered note is used again in the next measure then a new accidental must be written.
+      </p>
+      <p class="BasicBreak"><br /></p>
+      <p class="SubSubChapter">Precautionary Accidentals</p>
+      <p class="BasicParagraph">Since accidentals last only until the next measure line, you have to write them again if you want to repeat the same accidental in the next measure. Nonetheless, composers often remind the reader by using a precautionary accidental, as in Movie 6.6.
+      </p>
+      <p class="BasicParagraph">In this example, the A in the first measure would<br/>have reverted to A♭ anyway after the bar line, but<br/>a precautionary flat reduces the chance of error.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_756.png" style="left:436px; top:36px; " alt="page item"/>
+    <div id="item757" class="pageItem" style="left:450px; top:51px; ">
+      <p class="ActivityHeader">Movie 6.5&nbsp;&nbsp;Using accidentals with a key signature</p>
+    </div>
+    <div id="item758" class="pageItem" style="left:450px; top:193px; ">
+      <p class="ActivityBox">Notice that both B's are flatted in the second measure but only the first<br/>B requires a flat sign. The two C’s, however, are not in the same octave and<br/>so the natural sign at the beginning of the measure does not apply to the<br/>C an octave lower, though a cautious writer might use a precautionary<br/>sharp on it (see below).
+      </p>
+    </div>
+    <div id="item759" class="pageItem" style="left:449px; top:80px; " alt="page item">
+      <video width="512" height="104" controls="controls" poster="assets/images/item_759.png">
+        <source src="assets/media/chap6movie6.5.mp4" type="video/mp4"/>
+        <object width="512" height="104" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.5.mp4"/>
+          <img src="assets/images/item_759.png" width="512" height="104" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_760.png" style="left:482px; top:331px; " alt="page item"/>
+    <div id="item761" class="pageItem" style="left:500px; top:343px; ">
+      <p class="ActivityHeader">Movie 6.6&nbsp;&nbsp;Precautionary accidentals</p>
+    </div>
+    <div id="item762" class="pageItem" style="left:500px; top:501px; ">
+      <p class="ActivityBox">The natural sign is no longer in effect after the bar line.<br/>The precautionary accidental is simply a helpful reminder.
+      </p>
+    </div>
+    <div id="item763" class="pageItem" style="left:500px; top:370px; " alt="page item">
+      <video width="408" height="124" controls="controls" poster="assets/images/item_763.png">
+        <source src="assets/media/chap6movie6.6.mp4" type="video/mp4"/>
+        <object width="408" height="124" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.6.mp4"/>
+          <img src="assets/images/item_763.png" width="408" height="124" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_708.png" style="left:496px; top:572px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_709.png" style="left:504px; top:582px; " alt="page item"/>
+    <div id="item766" class="pageItem" style="left:567px; top:600px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.4
+      </p>
+    </div>
+
+    <div id="item768" class="pageItem" style="left:521px; top:636px; padding-left: 12px; text-indent: -10px; ">
+      <p class="ActivityBox">• <span class="Italic">Reading in Keys:</span> Practice reading pitches in the<br/>context of key signatures.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_769.png" style="left:538px; top:597px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 81-->
+
+  <li id="81" class="page">
+    <div id="item770" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">81</p>
+    </div>
+    <div id="item771" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item772" class="pageItem" style="left:50px; top:65px; ">
+      <p class="ReviewHeader">Review 6.2</p>
+      
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. A <span class="Italic">key signature</span> is a collection of flats or sharps<br/>that will be used throughout the piece unless changed briefly by an accidental or replaced by another key signature. It doesn’t tell if the piece<br/>is major or minor, but it reduces the possible keys<br/>to one major key and its relative minor.
+        </p>
+        <p class="ReviewText">2. You can identify the key of a piece by this trick:<br/>the last sharp in a sharp key signature is the leading tone of the major scale that uses that signature.<br/>In a flat key signature the last flat is the fourth note of the major scale using that signature (or, if there are two or more flats in the signature, the penultimate flat is the tonic note).
+        </p>
+      </div>
+    </div>
+    <div id="item773" class="pageItem" style="left:530px; top:36px; ">
+      <p class="Basic-Paragraph"><br /></p>
+      <p class="Basic-Paragraph"><br /></p>
+    </div>
+    <div id="item774" class="pageItem" style="left:544px; top:145px; padding-left: 22px; text-indent: -18px; ">
+      <p class="ReviewText">3. The <span class="Italic">circle of fifths</span> is a visual representation of the relationship between all of the major and minor keys. Starting at C, when the tonic rises a fifth a sharp is added to the key signature. Going the other way from C, when the tonic drops a fifth a flat is added to the signature.
+      </p>
+      <p class="ReviewText">4. A natural, sharp, flat, double-sharp or double-flat sign in a measure is an <span class="Italic">accidental</span> that marks a note that is not part of the prevailing major scale or natural minor scale defined by the key signature (unless it’s merely undoing an earlier accidental in the same measure). Accidentals remain in effect<br/>only until the next bar line.
+      </p>
+      <p class="ReviewText">5. A <span class="Italic">precautionary accidental</span> is an accidental that<br/>isn’t necessary except as a reminder to the reader<br/>that a previous accidental is no longer in effect.
+      </p>
+    </div>
+  </li>
+  
+<!--PAGE 82-->
+
+  <li id="82" class="page">
+    <div id="item775" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">82</p>
+    </div>
+    <div id="item776" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 3</p>
+      
+      <p style="width:57%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <p class="XLargeText">Alternate Forms of the Minor Scale</p>
+    </div>
+    <div id="item777" class="pageItem" style="left:36px; top:138px; ">
+      <p class="BasicParagraph">One common reason for using an accidental is to make use of an alternate form of the minor scale. The natural minor, as we have seen, uses only the notes designated by the key signature, but there are other minor scales.
+      </p>
+      
+      <br />
+      
+      <p class="SubChapter">The Harmonic Minor Scale</p>
+      <p class="BasicParagraph">Composers often want to raise the seventh note of a minor scale to make it lead back to the tonic – in other words, they want to give it a leading tone such as the major scale has:<br/>a seventh tone that is only one half step away from the tonic.<br/>To accomplish this, the seventh degree of the natural minor must be raised with an accidental of some sort, forming what we call the
+
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">harmonic minor<span class="custom info" style="width: 360px; ">
+	  <em>Harmonic Minor</em> 
+	  A scale that follows the same pattern as the natural minor scale except that it has a raised seventh degree to provide a leading tone back to the tonic. The raising is always accomplished by use of accidentals; it is not indicated in the key signature.
+      <br /><br />
+      The addition of the leading tone creates the distinctive sounding augmented second interval between the sixth and seventh scale degrees. The melodic minor scale eliminates the augmented interval by raising both the sixth and seventh scale notes.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      (when we get to chords you’ll see why it’s called that). For example, to form the harmonic minor scale in the key of G minor (Movie 6.7), the seventh degree is raised a half step by adding a sharp. A harmonic minor scale shares the same leading tone as its parallel<br/>major; in this case, the leading tone F♯ is common to<br/>both G harmonic minor and G major.
+      </p>
+    </div>
+    
+    <div id="item777x" class="pageItem" style="left:520px; top:138px; ">
+       <p class="BasicParagraph"><span class="Italic">The harmonic form of the minor requires no changes in the<br/>key signature</span>. The seventh degree is always raised by writing a sharp or natural as an accidental. Note also that when we alter<br/>a scale tone we never change its letter name. F becomes F♯,<br/>not G♭.
+       </p>
+    </div>
+
+    <img class="pageItem" src="assets/images/item_779.png" style="left:512px; top:290px; " alt="page item"/>
+    <div id="item780" class="pageItem" style="left:525px; top:301px; ">
+      <p class="ActivityHeader">Movie 6.7&nbsp;&nbsp;Natural and harmonic minors for key of G minor</p>
+    </div>
+    <div id="item781" class="pageItem" style="left:525px; top:590px; ">
+      <p class="ActivityBox">Raising the seventh degree of the natural minor scale forms the harmonic minor scale.
+      </p>
+    </div>
+    <div id="item782" class="pageItem" style="left:525px; top:330px; " alt="page item">
+      <video width="456" height="252" controls="controls" poster="assets/images/item_782.png">
+        <source src="assets/media/chap6movie6.7.mp4" type="video/mp4"/>
+        <object width="456" height="252" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.7.mp4"/>
+          <img src="assets/images/item_782.png" width="456" height="252" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 83-->
+
+  <li id="83" class="page">
+    <div id="item783" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">83</p>
+    </div>
+    <div id="item784" class="pageItem" style="left:36px; top:36px; ">
+      <p class="SubChapter">The Melodic Minor</p>
+      <p class="BasicParagraph">Now that you can identify intervals you’ll be able to see that the harmonic minor scale has an unusual feature. What would you call the interval between its sixth and seventh degrees shown<br/>in Movie 6.8?
+      </p>
+      <p class="BasicParagraph">This interval, the <span class="Italic">augmented second</span>, was long regarded as awkward or at least exotic. When composers wanted to avoid the augmented second but still intended to use the raised seventh degree they raised the sixth degree as well, making the interval between the two an ordinary major second. Because the goal of this alteration was to produce smoother melody we call this form of minor the
+
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">melodic minor<span class="custom info">
+	  <em>Melodic Minor</em> 
+	  An alternate form of the natural<br/>minor scale. The ascending melodic minor scale is the same as the harmonic minor except that the sixth degree is also raised, to eliminate the augmented second found between<br/>the sixth and seventh degrees of the harmonic minor. The ascending pattern of whole steps and half steps is:
+	  <br /><br />
+	  <strong class="Bold">W H W W W W H</strong>
+      <br /><br />
+      The melodic minor is represented<br/>as reverting to natural minor when descending, though in practice, the three forms of minor are freely mixed together.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      (Movie 6.9).
+      </p>
+      
+      <span style="float:right; width:12%; height:120px; "></span>
+      
+      <p class="BasicParagraph">Notice that we raised the sixth degree by using a natural sign on what would otherwise have been an E♭. In other scales it might be necessary to use a sharp to get the same result, as in the melodic form of the A minor scale (Figure 6.6).
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_785.png" style="left:573px; top:76px; " alt="page item"/>
+    <div id="item786" class="pageItem" style="left:587px; top:86px; ">
+      <p class="ActivityHeader">Movie 6.8&nbsp;&nbsp;Mystery interval</p>
+    </div>
+    <div id="item787" class="pageItem" style="left:587px; top:258px; ">
+      <p class="ActivityBox">An augmented second is created by raising the 7th degree of the natural minor scale.
+      </p>
+    </div>
+    <div id="item788" class="pageItem" style="left:587px; top:112.5px; " alt="page item">
+      <video width="268" height="140" controls="controls" poster="assets/images/item_788.png">
+        <source src="assets/media/chap6movie6.8.mp4" type="video/mp4"/>
+        <object width="268" height="140" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.8.mp4"/>
+          <img src="assets/images/item_788.png" width="268" height="140" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_789.png" style="left:467px; top:384px; " alt="page item"/>
+    <div id="item790" class="pageItem" style="left:483px; top:396px; ">
+      <p class="ActivityHeader">Movie 6.9&nbsp;&nbsp;Ascending melodic minor for the key of G minor</p>
+    </div>
+    <div id="item791" class="pageItem" style="left:483px; top:639px; ">
+      <p class="ActivityBox">The sixth and seventh scale degrees are raised to form the ascending melodic minor scale.
+      </p>
+    </div>
+    <div id="item792" class="pageItem" style="left:482px; top:425px; " alt="page item">
+      <video width="468" height="204" controls="controls" poster="assets/images/item_792.png">
+        <source src="assets/media/chap6movie6.9.mp4" type="video/mp4"/>
+        <object width="468" height="204" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.9.mp4"/>
+          <img src="assets/images/item_792.png" width="468" height="204" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_415.png" style="left:74px; top:515px; " alt="page item"/>
+    <div id="item794" class="pageItem" style="left:94px; top:522px; ">
+      <p class="ActivityHeader">Figure 6.6&nbsp;&nbsp;The melodic form of the<br/>A minor scale is spelled with a<br/>sharp sign.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_795.png" style="left:94px; top:588px; " alt="page item"/>
+  </li>
+
+<!--PAGE 84-->
+
+  <li id="84" class="page">
+    <div id="item796" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">84</p>
+    </div>
+    <div id="item797" class="pageItem" style="left:36px; top:50px; ">
+    
+      <span style="float:right; width:65%; height:230px; "></span>
+    
+      <p class="BasicParagraph">The melodic minor is said to have two forms — one for going up and one for coming down as shown at right.
+      </p>
+      <p class="BasicParagraph">In practice there is usually no real need to define the melodic minor as having different forms for ascent and descent, because all three forms of the minor can be mixed in a single piece. The “descending melodic minor” is really just the natural minor again.
+      </p>
+      <p class="BasicParagraph">On the other hand, the textbook definition of melodic minor gives us a handy way to describe tunes such as the Scottish folk song "Charlie Is My Darling,” whose character depends on its use of raised sixth and seventh degrees that revert to their natural form when the movement is downward.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_798.png" style="left:399px; top:62px; " alt="page item"/>
+    <div id="item799" class="pageItem" style="left:412px; top:73px; ">
+      <p class="ActivityHeader">Movie 6.10&nbsp;&nbsp;The melodic minor ascending and descending</p>
+    </div>
+    <div id="item800" class="pageItem" style="left:412px; top:217px; ">
+      <p class="ActivityBox">The descending melodic minor is the same as the natural minor scale form.
+      </p>
+    </div>
+    <div id="item801" class="pageItem" style="left:412px; top:100px; " alt="page item">
+      <video width="548" height="108" controls="controls" poster="assets/images/item_801.png">
+        <source src="assets/media/chap6movie6.10.mp4" type="video/mp4"/>
+        <object width="548" height="108" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.10.mp4"/>
+          <img src="assets/images/item_801.png" width="548" height="108" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_802.png" style="left:121px; top:386.5px; " alt="page item" />
+
+    <div id="item802a" class="pageItem" style="left:136; top:400px; ">
+      <p class="ActivityHeader">Movie 6.11&nbsp;&nbsp;A traditional tune that uses the melodic A minor scale</p>
+    </div>
+    
+    <div id="item802b" class="pageItem" style="left:136px; top:429px; " alt="page item">
+      <video width="752" height="188" controls="controls" poster="assets/images/item_802c.png">
+        <source src="assets/media/chap6movie6.11.mp4" type="video/mp4"/>
+        <object width="752" height="188" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.11.mp4"/>
+          <img src="assets/images/item_802c.png" width="752" height="188" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <div id="item803" class="pageItem" style="left:136px; top:625px; ">
+      <p class="ActivityBox">Raised scale notes are circled in red; lowered scale notes are circled in blue.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 85-->
+
+  <li id="85" class="page">
+    <div id="item800x" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">85</p>
+    </div>
+
+    <div id="item801x" class="pageItem" style="left:36px; top:36px; ">
+      <p class="Basic-Paragraph"> <span class="Movie-text-1">   </span>
+      </p>
+    </div>
+
+    <div id="item802x" class="pageItem" style="left:55px; top:63px; ">
+      <p class="ReviewHeader">Review 6.3</p>
+      
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. The natural minor scale uses only the notes from<br/>its key signature. The harmonic and melodic minor forms use accidentals to alter the character of the scale.
+        </p>
+        <p class="ReviewText">2. The harmonic minor scale is the same as the natural minor except that the seventh degree is raised one half step to provide a leading tone back to the tonic. The raising is always accomplished by use of accidentals; it is not indicated in the key signature.
+        </p>
+      </div>
+    </div>
+    <div id="item803x" class="pageItem" style="left:530px; top:36px; ">
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item804" class="pageItem" style="left:549px; top:141px; padding-left: 22px; text-indent: -18px; ">
+      <p class="ReviewText">3. The ascending melodic minor scale is the same as<br/>the harmonic minor except that the sixth degree is also raised, to eliminate the augmented second<br/>found between the sixth and seventh degrees of the harmonic minor. The melodic minor is represented as reverting to natural minor when descending, though in practice the three forms of minor are<br/>freely mixed together.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_805.png" style="left:96.5px; top:417px; " alt="page item"/>
+    <div id="item806" class="pageItem" style="left:254px; top:431px; ">
+      <p class="ActivityHeader">The Natural Minor and its Alternate Forms</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_807.png" style="left:254px; top:460px; " alt="page item"/>
+    <div id="item808.1" class="pageItem" style="left:113px; top:505px; ">
+      <p class="ActivityBox">
+      D natural minor
+      </p>
+    </div>
+    <div id="item808.2" class="pageItem" style="left:113px; top:560px; ">
+      <p class="ActivityBox">
+      D harmonic minor
+      </p>
+    </div>
+    <div id="item808.3" class="pageItem" style="left:113px; top:615px; ">
+      <p class="ActivityBox">
+      D melodic minor
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 86-->
+
+  <li id="86" class="page">
+    <div id="item809" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">86</p>
+    </div> 
+    <div id="item810" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 4</p>
+    
+      <p style="width:58%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <p class="XLargeText">Beyond the Major and Minor Scales</p>
+    </div>
+    <div id="item811" class="pageItem" style="left:36px; top:138px; ">
+      <p class="BasicParagraph">There are a number of other ways to divide the octave, some coming from folk traditions or ancient practice, and some from<br/>modern ingenuity. Each has a distinctive quality. These include the <span class="Italic">pentatonic scales</span>, the <span class="Italic">blues scale</span>, the <span class="Italic">whole-tone, octatonic</span> and <span class="Italic">chromatic scales</span>, and the  <span class="Italic">Church modes</span>.
+      </p>
+      <p class="SubChapter">The Pentatonic Scale</p>
+      <p class="BasicParagraph">The
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">pentatonic<span class="custom info">
+	  <em>Pentatonic</em> 
+	  A five note scale that follows the pattern of the piano’s black keys: 
+	  <br /><br />
+	  <strong class="Bold">W W m3 W m3</strong>
+	  <br /><br />
+	  It’s like a major scale without<br/>the fourth and seventh degrees.<br/>The pentatonic also comes in minor forms, such as:
+	  <br /><br />
+	  <strong class="Bold">m3 W W m3 W</strong>
+	  </span></a>
+	  <!--TOOL TIP END-->
+
+      (five-tone) scale is found in folk music around the world as well as in composed music. Almost anything you<br/>play in the pentatonic scale sounds melodious because there’s no way to make a dissonant leap: it contains no augmented fourth or diminished fifth. The typical major pentatonic scale is built in this pattern: whole step, whole step, minor third, whole step, minor third – just like the black keys of the piano, or like a major scale without the fourth and seventh degrees. If you play a melody using only black keys you are playing in a pentatonic scale.
+      </p>
+    </div>
+
+    <img class="pageItem" src="assets/images/item_813.png" style="left:224px; top:384px; " alt="page item"/>
+    <div id="item814" class="pageItem" style="left:238px; top:397px; ">
+      <p class="ActivityHeader">Movie 6.12&nbsp;&nbsp;Debussy, “La fille aux cheveux de lin,”</span> <span class="Italic">Préludes</span>, Book I
+      </p>
+    </div>
+    <div id="item815" class="pageItem" style="left:238px; top:678px; ">
+      <p class="ActivityBox">This pentatonic melody is played almost entirely on the piano’s black keys.
+      </p>
+    </div>
+    <div id="item816" class="pageItem" style="left:237px; top:426.5px; " alt="page item">
+      <video width="548" height="244" controls="controls" poster="assets/images/item_816.png">
+        <source src="assets/media/chap6movie6.12.mp4" type="video/mp4"/>
+        <object width="548" height="244" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.12.mp4"/>
+          <img src="assets/images/item_816.png" width="548" height="244" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+
+<!--PAGE 87-->
+
+  <li id="87" class="page">
+    <div id="item817" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">87</p>
+    </div>
+    <div id="item818" class="pageItem" style="left:36px; top:44px; ">
+      <p class="BasicParagraph">“Amazing Grace” is a good example of a major pentatonic melody: its only pitches are F, G, A, C and D.
+      </p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicParagraph">“Come All You Fair and Tender Maidens” is a different sort of pentatonic melody. Though it uses the same five notes as<br/>“Amazing Grace” it gives a minor effect by emphasizing the D and the minor third above it:
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_819.png" style="left:141px; top:72px; " alt="page item"/>
+    <div id="item820" class="pageItem" style="left:155px; top:84px; ">
+      <p class="ActivityHeader">Movie 6.13&nbsp;&nbsp;A major pentatonic melody</p>
+    </div>
+    <div id="item821" class="pageItem" style="left:155px; top:302px; ">
+      <p class="ActivityBox">“Amazing Grace” uses just five scale tones: F,G, A, C and D
+      </p>
+    </div>
+    <div id="item822" class="pageItem" style="left:154px; top:112px; " alt="page item">
+      <video width="716" height="180" controls="controls" poster="assets/images/item_822.png">
+        <source src="assets/media/chap6movie6.13.mp4" type="video/mp4"/>
+        <object width="716" height="180" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.13.mp4"/>
+          <img src="assets/images/item_822.png" width="716" height="180" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_823.png" style="left:72px; top:429px; " alt="page item"/>
+    <div id="item824" class="pageItem" style="left:86px; top:441px; ">
+      <p class="ActivityHeader">Movie 6.14&nbsp;&nbsp;A minor pentatonic melody</p>
+    </div>
+    <div id="item825" class="pageItem" style="left:85px; top:470px; " alt="page item">
+      <video width="852" height="188" controls="controls" poster="assets/images/item_825.png">
+        <source src="assets/media/chap6movie6.14.mp4" type="video/mp4"/>
+        <object width="852" height="188" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.14.mp4"/>
+          <img src="assets/images/item_825.png" width="852" height="188" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+
+<!--PAGE 88-->
+
+  <li id="88" class="page">
+    <div id="item826" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">88</p>
+    </div>
+    
+    <div id="item837" class="pageItem" style="left:36px; top:68px; ">
+      <p class="BasicParagraph">
+      	<p class="BasicParagraph">
+      	Movie 6.15 shows the major pentatonic, as found in<br/>“Amazing Grace,” the minor, as found in “Come All You Fair<br/>and Tender Maidens,” and an alternate form of the<br/>minor pentatonic.
+      </p>
+    </div>
+    
+    <div id="item827" class="pageItem" style="left:36px; top:280px; ">
+      <p class="SubChapter">The Whole-Tone Scale</p>
+      <p class="BasicParagraph">As the name suggests, the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">whole-tone scale<span class="custom info">
+	  <em>Whole-Tone Scale</em> 
+	  A scale composed entirely of whole steps. It has only six notes and does not have a clear tonic.
+	  </span></a>
+	  <!--TOOL TIP END-->
+
+      is composed entirely of whole steps. A non-traditional scale, it has no dominant, subdominant, or leading tone. Therefore you can’t make any of its notes sound like a “tonic,” and that gives whole-tone music a sense of being adrift without<br/>a compass.
+     </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_828.png" style="left:490px; top:38px; " alt="page item"/>
+    <div id="item829" class="pageItem" style="left:504px; top:50px; ">
+      <p class="ActivityHeader">Movie 6.15&nbsp;&nbsp;Several forms of the pentatonic scale</p>
+    </div>
+    <div id="item830" class="pageItem" style="left:504px; top:78px; " alt="page item">
+      <video width="448" height="136" controls="controls" poster="assets/images/item_830.png">
+        <source src="assets/media/chap6movie6.15.mp4" type="video/mp4"/>
+        <object width="448" height="136" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.15.mp4"/>
+          <img src="assets/images/item_830.png" width="448" height="136" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_831.png" style="left:572px; top:260px; " alt="page item"/>
+    <div id="item832" class="pageItem" style="left:586px; top:272px; ">
+      <p class="ActivityHeader">Movie 6.16&nbsp;&nbsp;Whole-tones from C
+      </p>
+    </div>
+    
+    <div id="item830" class="pageItem" style="left:504px; top:78px; " alt="page item">
+      <video width="448" height="136" controls="controls" poster="assets/images/item_830.png">
+        <source src="assets/media/chap6movie6.15.mp4" type="video/mp4"/>
+        <object width="364" height="128" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.16.mp4"/>
+          <img src="assets/images/item_833.png" width="364" height="128" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <div id="item833" class="pageItem" style="left:586px; top:303px; " alt="page item">
+      <video width="364" height="128" controls="controls" poster="assets/images/item_833.png">
+        <source src="assets/media/chap6movie6.16.mp4" type="video/mp4"/>
+        <object width="364" height="128" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.16.mp4"/>
+          <img src="assets/images/item_833.png" width="364" height="128" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_1765.png" style="left:39px; top:478px; " alt="page item"/>
+    <div id="item835" class="pageItem" style="left:50px; top:492px; ">
+      <p class="ActivityHeader">Movie 6.17&nbsp;&nbsp;Whole-tones in the opening of Debussy’s “Voiles,” <span class="Italic">Préludes</span>, Book I<br/>“Voiles” translates as either "veils" or "sails" — either translation fits the mood of the piece.
+      </p>
+    </div>
+    <div id="item836" class="pageItem" style="left:50px; top:563px; " alt="page item">
+      <video width="628" height="136" controls="controls" poster="assets/images/item_836.png">
+        <source src="assets/media/chap6movie6.17.mp4" type="video/mp4"/>
+        <object width="628" height="136" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.17.mp4"/>
+          <img src="assets/images/item_836.png" width="628" height="136" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <div id="item838" class="pageItem" style="left:711px; top:523px; ">
+      <p class="BasicParagraph">The whole-tone scale figures prominently in the music of the Impressionist composer Debussy.<br/>In the passage at left he composed descending whole-tones in parallel thirds and fourths.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 89-->
+
+  <li id="89" class="page">
+    <div id="item839" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">89</p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_840.png" style="left:63px; top:156px; " alt="page item"/>
+    
+    <div id="item840" class="pageItem" style="left:78px; top:169px; ">
+      <p class="ActivityHeader">Movie 6.18&nbsp;&nbsp;The octatonic scale</p>
+    </div>
+    <div id="item841" class="pageItem" style="left:78px; top:332px; ">
+      <p class="ActivityBox">Eight tones follow a pattern of alternating whole steps and half steps.</p>
+    </div>
+    
+    <div id="" class="pageItem" style="left:78px; top:199px; " alt="page item">
+      <video width="304" height="124" controls="controls" poster="assets/images/item_840a.png">
+        <source src="assets/media/chap6movie6.18.mp4" type="video/mp4"/>
+        <object width="" height="" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.18x.mp4"/>
+          <img src="assets/images/item_840a.png" width="304" height="124" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_756.png" style="left:424px; top:144px; " alt="page item"/>
+    
+    <div id="item842a" class="pageItem" style="left:438px; top:159px; ">
+      <p class="ActivityHeader">Movie 6.19<br/>Octatonic scale in Bartok's <span class="Italic">Microkosmos</span> Book 4, No. 101</p>
+    </div>
+    <div id="item842b" class="pageItem" style="left:440px; top:365px; ">
+      <p class="ActivityBox">The opening measures are built on alternating whole steps and half steps starting on E♭ (E♭, F, G♭, A♭, A, B, C, D).</p>
+    </div>
+    
+    <div id="" class="pageItem" style="left:438px; top:208px; " alt="page item">
+      <video width="508" height="148" controls="controls" poster="assets/images/item_841a.png">
+        <source src="assets/media/chap6movie6.19.mp4" type="video/mp4"/>
+        <object width="" height="" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.19.mp4"/>
+          <img src="assets/images/item_841a.png" width="508" height="148" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_842.png" style="left:573px; top:460px; " alt="page item"/>
+    <div id="item843" class="pageItem" style="left:587px; top:473px; ">
+      <p class="ActivityHeader">Movie 6.20&nbsp;&nbsp;The blues scale</p>
+    </div>
+    <div id="item844" class="pageItem" style="left:587px; top:619px; ">
+      <p class="ActivityBox">Ambiguity between major and minor characterizes the blues scale.</p>
+    </div>
+    <div id="item845" class="pageItem" style="left:586px; top:500px; " alt="page item">
+      <video width="352" height="112" controls="controls" poster="assets/images/item_845.png">
+        <source src="assets/media/chap6movie6.20.mp4" type="video/mp4"/>
+        <object width="352" height="112" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.20.mp4"/>
+          <img src="assets/images/item_845.png" width="352" height="112" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <div id="item846" class="pageItem" style="left:53px; top:432px; ">
+      <p class="SubChapter">The Blues Scale</p>
+      <p class="BasicParagraph">The
+
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">blues scale<span class="custom info">
+	  <em>Blues Scale</em> 
+	  A scale similar to the major scale<br/>but with ambiguous third and seventh degrees, which tend to be minor<br/>in a melody, but major in the accompaniment. A blues melody often slides between the minor and major forms of the third and seventh degrees.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      is sometimes represented as having two forms of the 3rd and 7th degrees: both major and minor. Sometimes you’ll<br/>see other variable degrees too, like the 4th/sharp 4th, but what<br/>really gives blues music its character is that the harmony is based<br/>on the major scale and the melody’s variable degrees clash with the harmony. Typical blues will sound the primary major chords under melody that accents minor notes, or notes bending between minor and major. That makes the blues scale hard to depict in a way that communicates its real character, but this is close (Movie 6.20).
+      </p>
+    </div>
+    <div id="item847" class="pageItem" style="left:36px; top:36px; ">
+      <p class="SubChapter">The Octatonic Scale</p>
+      <p class="BasicParagraph">This non-traditional eight-tone
+      
+      <!--TOOL TIP BEGIN-->
+	  (<a class="tooltip" href="#">octatonic<span class="custom info">
+	  <em>Octatonic</em> 
+	  An eight-tone nontraditional scale formed from alternating whole and half steps.
+	  </span></a>)
+	  <!--TOOL TIP END-->
+      
+      scale consists of alternating whole and half steps, and produces an effect that recalls<br/>a traditional minor, except that it lacks the tonic-dominant relationship – it contains no pitch that would be a perfect fifth above<br/>the tonic.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 90-->
+
+  <li id="90" class="page">
+    <div id="item848" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">90</p>
+    </div>
+    <div id="item849" class="pageItem" style="left:36px; top:37px; ">
+      <p class="SubChapter">Church Modes</p>
+      <p class="BasicParagraph">The major and minor scales are the survivors of a number of scales or
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">modes<span class="custom info">
+	  <em>Modes</em> 
+	  Scale forms that date from medieval times. The modes, or, church modes, as they are often referred to, are essentially diatonic scales. The six modes are: Dorian, Phrygian, Lydian, and Mixolydian, Ionian, and Aeolian.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      that date from medieval times. The modes are still occasionally heard today, especially in folk music and jazz. You can get something of an idea of the flavor of the modes if you play<br/>just the white keys using D, E, F, or G as a tonic. The mode starting on D is known as the <span class="Italic">Dorian</span> mode; E is the tonic for the <span class="Italic">Phrygian</span>; F for the <span class="Italic">Lydian</span>, and G for the <span class="Italic">Mixolydian</span>. The major and natural minor scales are sometimes called the <span class="Italic">Ionian</span> and<br/>the </span> <span class="Italic">Aeolian</span> modes.
+      </p>
+      <p class="BasicParagraph">Just using the notes of one of these scales does not make a tune really modal. If you want to write a modal melody yourself it is important to cadence to its tonic – just as you need to do when distinguishing B minor from D major. You can emphasize the tonic<br/>and dominant degrees by thinking of them as melodic destinations or stopping points. Phrases or sections will usually end on either the dominant or the tonic.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_850.png" style="left:127px; top:335px; " alt="page item"/>
+    <div id="item851" class="pageItem" style="left:140px; top:349px; ">
+      <p class="ActivityHeader">Movie 6.21&nbsp;&nbsp;The church modes</p>
+    </div>
+    <div id="item852" class="pageItem" style="left:140px; top:573px; ">
+      <p class="ActivityBox">The Ionian and the Aeolian modes not shown here correspond to the major and natural minor scales.</p>
+    </div>
+    <div id="item853" class="pageItem" style="left:140px; top:378px; " alt="page item">
+      <video width="744" height="188" controls="controls" poster="assets/images/item_853.png">
+        <source src="assets/media/chap6movie6.21.mp4" type="video/mp4"/>
+        <object width="744" height="188" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.21.mp4"/>
+          <img src="assets/images/item_853.png" width="744" height="188" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 91-->
+
+  <li id="91" class="page">
+    <div id="item854" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">91</p>
+    </div>
+    <div id="item855" class="pageItem" style="left:36px; top:37px; ">
+      <p class="BasicParagraph">The Dorian mode is probably the most familiar to our ears. The only difference between Dorian and natural minor is the sixth degree, which is a half step higher in Dorian.</p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="SubChapter">Transposing The Church Modes</p>
+      <p class="BasicParagraph">The pattern of steps of each of these can be transposed to any starting note, in which case it is convenient to use a key signature.<br/>For example, Dorian transposed to begin on F would use a key signature of three flats. Think this way: Dorian in its original position starts on D but uses the key signature of the C major scale, which is a major second lower. So when transposed to F it would use the key signature of the major scale a major second lower from F: E♭. In the same way, Phrygian uses the key signature of the major scale located a major third below its tonic; Lydian, a perfect fourth below; Mixolydian, a perfect fifth below.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_856.png" style="left:103px; top:100px; " alt="page item"/>
+    <div id="item857" class="pageItem" style="left:116px; top:114px; ">
+      <p class="ActivityHeader">Movie 6.22&nbsp;&nbsp;A Dorian melody</p>
+    </div>
+    <div id="item858" class="pageItem" style="left:116px; top:339px; ">
+      <p class="ActivityBox">The asterisk marks the occurrence of that sixth degree in this well-known traditional song.</p>
+    </div>
+    <div id="item859" class="pageItem" style="left:116px; top:142px; " alt="page item">
+      <video width="792" height="188" controls="controls" poster="assets/images/item_859.png">
+        <source src="assets/media/chap6movie6.22.mp4" type="video/mp4"/>
+        <object width="792" height="188" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.22.mp4"/>
+          <img src="assets/images/item_859.png" width="792" height="188" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+
+<!--PAGE 92-->
+
+  <li id="92" class="page">
+    <div id="item860" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">92</p>
+    </div>
+    <div id="item861" class="pageItem" style="left:36px; top:36px; ">
+      <p class="SubChapter">Chromatic vs. Diatonic Scales</p>
+      <p class="BasicParagraph">If you write a scale that is all half steps you’ll find that you need to include some chromatic half steps – half steps in which the letter name does not change, such as F to F♯. That’s why a scale made of all half steps is often called the
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">chromatic scale<span class="custom info" style="width: 180px; ">
+	  <em>Chromatic Scale</em> 
+	  A scale composed entirely<br/>of half steps. It gets its name from the fact that it contains both chromatic and diatonic half steps.
+	  <br /><br />
+	  A chromatic half step is one in which both notes have the same letter name, such as<br/>C to C♯. A diatonic half step is one in which the letter name changes, such as<br/>E to F or G♯ to A.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      (another name is the twelve-tone scale). Diatonic scales use only whole tones and diatonic half steps in which the letter name changes, such as E to F or G♯ to A (for more explanation of these terms see the glossary entry for <a class="tooltip" href="#">genera<span class="custom info" style="width: 360px; "><em>Genera</em>In ancient Greek music theory, the three types of four-note scale patterns (tetrachords) built within the space of a fourth. The diatonic genus broke the fourth up into two whole steps (tones) and a half step. A more unusual division was the chromatic, which consisted of two half steps of different size and a minor third. The last and most exotic was the enharmonic: a major third, a half step, and a tiny interval (smaller than a half step), called a diesis.<br/>All these words continue to have meanings based on their original significance to the Greeks. Diatonic music is based on major or minor scales or the church modes; all of which are called diatonic because they resemble the diatonic genus above – they employ whole tones and that type of half step in which the note name changes. Chromatic music involves at least some half steps in which the note name remains the same, as in the chromatic genus. Similarly, the word enharmonic still refers to the relationship between two notes that are written differently and would in theory be separated by a diesis, and yet are played on the same key of the piano, such as E♯ and F.</span></a>
+	  <!--TOOL TIP END-->). 
+      The spelling of the half steps in a chromatic scale is variable, except that B-C and E-F are almost always spelled diatonically. The arrangement below is one possibility.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_862.png" style="left:221px; top:217px; " alt="page item"/>
+    <div id="item863" class="pageItem" style="left:234px; top:231px; ">
+      <p class="ActivityHeader">Movie 6.23&nbsp;&nbsp;A chromatic scale</p>
+    </div>
+    <div id="item864" class="pageItem" style="left:235px; top:377px; ">
+      <p class="ActivityBox">The chromatic scale includes diatonic and chromatic half steps.</p>
+    </div>
+    <div id="item865" class="pageItem" style="left:234px; top:260px; " alt="page item">
+      <video width="556" height="108" controls="controls" poster="assets/images/item_865.png">
+        <source src="assets/media/chap6movie6.23.mp4" type="video/mp4"/>
+        <object width="556" height="108" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap6movie6.23.mp4"/>
+          <img src="assets/images/item_865.png" width="556" height="108" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_866.png" style="left:217px; top:439px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_867.png" style="left:227px; top:449px; " alt="page item"/>
+    <div id="item868" class="pageItem" style="left:381px; top:473px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.5</p>
+    </div>
+
+    <div id="item870" class="pageItem" style="left:260px; top:509px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Spelling Scales:</span> Test your knowledge of the basic major and minor scales.<br />
+      • <span class="Italic">Scale Ear Training:</span> Identify which type of scale has been played.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_871.png" style="left:350px; top:470px; " alt="page item"/>
+  </li>
+
+<!--PAGE 93-->
+
+  <li id="93" class="page">
+    <div id="item872" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">93</p>
+    </div>
+    <div id="item873" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item874" class="pageItem" style="left:55px; top:53px; ">
+      <p class="ReviewHeader">Review 6.4</p>
+      
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. The <span class="Italic">pentatonic</span> scale is used extensively in folk<br/>music all over the world. It has five notes, which in the major pentatonic are arranged like the black<br/>keys of a piano: whole step, whole step, minor third, whole step, minor third. It’s like a major scale without the fourth and seventh degrees. The pentatonic also comes in minor forms, such as: minor third, whole step, whole step, minor third, whole step.
+        </p>
+        <p class="ReviewText">2. The <span class="Italic">whole-tone</span> scale is composed entirely of whole<br/>steps. It has only six notes and does not have a clear tonic.
+        </p>
+        <p class="ReviewText">3. The <span class="Italic">octatonic</span> scale is an eight-tone nontraditional scale formed from alternating whole and half steps.
+        </p>
+        <p class="ReviewText">4. The <span class="Italic">blues scale</span> is like the major scale, but with ambiguous third and seventh degrees that tend<br/>to be minor in melody but clash with major accompaniment. A blues melody often slides between the minor and major forms of the<br/>third and seventh.
+        </p>
+      </div>
+    </div>
+    <div id="item875" class="pageItem" style="left:530px; top:36px; ">
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+    </div>
+    <div id="item876" class="pageItem" style="left:549px; top:130px; ">
+      <div class="pageItem" style="left:0px; top:98; padding-left: 22px; text-indent: -20px; ">
+        <p class="ReviewText">5. The church modes are predecessors of our modern major and minor scales. The pattern of steps for each mode can be found in the white keys of the piano: the mode beginning on D is the <span class="Italic">Dorian</span>,<br/>E is the tonic for the <span class="Italic">Phrygian</span>, F for the <span class="Italic">Lydian</span>,<br/>and G for the <span class="Italic">Mixolydian.</span> Our major and natural minor scales are sometimes called the <span class="Italic">Ionian</span> and <span class="Italic">Aeolian</span> modes.
+        </p>
+        <p class="ReviewText">6. The chromatic scale is composed of half steps.<br/>It gets its name from the fact that it contains both chromatic and diatonic half steps. A chromatic half step is one in which both notes have the same letter name, such as C to C♯. A diatonic half step is one<br/>in which the letter name changes, such as E to F or<br/>G♯ to A. The major and minor scales and the<br/>modes are called diatonic scales for this reason:<br/>they include only diatonic half steps.
+        </p>
+      </div>
+    </div>
+
+    <div class="pageItem" style="left:590px; top:696px; "">
+<a href="C07.html" class="button V14" style="display: block; margin-left: auto; margin-right: auto; width: 320px; ">Continue To Chapter 7 &nbsp;&nbsp;&nbsp; >></a>
+    </div>
+
+  </li>
+</ul>
+
+<script type="text/javascript">$('video,audio').mediaelementplayer({pluginPath:'assets/media/',iPadUseNativeControls:true, iPhoneUseNativeControls:true, AndroidUseNativeControls:true});</script>
+
+<div class="NaviBar"><img src="assets/images/NaviBar.png"></div>
+<div class="NaviBarText">
+		  <a class="NaviBarLink" href="TOC.html#toc1">Contents</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#ii">Foreward</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#intro">Introduction</a>
+		  &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#1">1</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C02.html">2</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C03.html">3</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C04.html">4</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C05.html">5</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C06.html">6</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C07.html">7</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C08.html">8</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C09.html">9</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C10.html">10</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C11.html">11</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C12.html">12</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C13.html">13</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C14.html">14</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C15.html">15</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="glossary.html">Glossary</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="keywords.html">Index</a>
+</div>
+
+</div>
+
+</body>
+</html>

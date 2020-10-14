@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Chapter 1</title>
+<meta name="generator" content="In5 v1.2.1">
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="assets/js/jquery.min.js"><\/script>')</script>
+<script type="text/javascript" src="assets/js/jquery.anythingslider.min.js"></script>
+<script src="assets/js/mediaelement-and-player.min.js"></script>
+<link rel="stylesheet" href="assets/css/mediaelementplayer.min.css" />
+<script type="text/javascript" src="assets/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.touchSwipe.min.js"></script>
+<link rel="stylesheet" href="assets/css/theme-minimalist-square.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+<script type="text/javascript" src="assets/js/highslide/highslide-full.js"></script>
+<link rel="stylesheet" type="text/css" href="assets/js/highslide/highslide.css" />
+
+<script type="text/javascript">
+hs.graphicsDir = 'assets/js/highslide/graphics/';
+hs.outlineType = 'rounded-white';
+hs.wrapperClassName = 'draggable-header';
+hs.preserveContent = false;
+hs.dimmingOpacity = 0.75;
+</script>
+
+<script type="text/javascript" >
+	var touchEnabled = 'ontouchstart' in document.documentElement;
+	var clickEv = (touchEnabled) ? 'ontouchstart' : 'click';
+	var useSwipe = true;
+	var pageMode = 'h';
+	var multifile = false;
+	var arrowNav = true;
+	var nav;
+	
+	function toggleAudio(btn){
+		var elem = $(btn).siblings('audio')[0];
+		if(elem == undefined) elem = $(btn).siblings().find('audio')[0];
+		if(elem == undefined) return;
+		try{
+		var player = elem.player;
+		var media = player.media;
+		if(media.paused) player.play();
+		else player.pause();
+		} catch(e){}
+	}
+	
+	
+	$(function(){
+				if($('ul.thumbs').length) $('#in5footer').hide();
+		if($.colorbox) {
+			$('.lightbox').colorbox({iframe:true, width:"80%", height:"80%"});
+			$('.thumb').colorbox({maxWidth:"85%", maxHeight:"85%"});
+		}
+		$('img').bind('dragstart', function(event) { event.preventDefault(); });
+		$('.pageItem').each(function(){
+			if($(this).is('[onclick]')){
+				if(touchEnabled) {
+					//this.setAttribute('touchstart', this.getAttribute('onclick'));
+					//this.removeAttribute('onclick');
+				} else this.style.cursor = 'pointer';
+			}
+		});
+		if(multifile){
+			nav = { numPages:20,
+			current:parseInt(location.href.split('/').pop().split('.html').join('')),
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			to:function(n){
+				if(n <= 0 || n > nav.numPages) return;
+				var targPage = (n*.0001).toFixed(4).substr(2) + '.html';
+				location.assign(targPage);
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav){
+				$('nav:hidden, nav #backBtn, nav #nextBtn').show();
+				if(nav.current == 1) $('nav #backBtn').hide();
+				if(nav.current == nav.numPages) $('nav #nextBtn').hide();
+			}	
+		} else if(pageMode.indexOf('liquid') != -1) {
+			nav = { numPages:$('.pages .page').length,
+			current:1,
+			back:function(ref){nav.to(nav.current-1);},
+			next:function(ref){nav.to(nav.current+1);},
+			first:function(){nav.to(1);},
+			last:function(){nav.to(nav.numPages);},
+			to:function(n){
+				if(n < 1 || n > nav.numPages) return;
+				nav.current = n;
+				$('.pages .page:visible').hide();
+				$('.pages .page').eq(n-1).show();
+				if(n < 2) $('nav #backBtn:visible').hide();
+				else $('nav #backBtn:hidden').show();
+				if(n >= nav.numPages) $('nav #nextBtn:visible').hide();
+				else $('nav #nextBtn:hidden').show();
+			} };
+			$('nav #nextBtn').bind(clickEv, function(){ nav.next(); });
+			$('nav #backBtn').bind(clickEv, function(){ nav.back(); });
+			if(arrowNav) $('nav:hidden').show();
+			nav.to(1); //init;
+		} else if($.hasOwnProperty('scrollTo')){
+			nav = { numPages:$('.pages .page').length,
+			back:function(ref){var targ=$(ref).parent('.page').prev()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			next:function(ref){var targ=$(ref).parent('.page').next()[0]; if(targ!=undefined); $.scrollTo(targ, 500);},
+			first:function(){$.scrollTo($('.page')[0], 500)},
+			last:function(){$.scrollTo($('.page')[nav.numPages-1], 500)},
+			to:function(n){$.scrollTo($('.page')[n-1], 500)} };
+		}
+				var sliderSettings = {
+			mode: pageMode,
+			theme: 'minimalist-square',
+			buildArrows: (!touchEnabled && arrowNav),
+    		buildNavigation: false,
+		    buildStartStop: false,
+		    hashTags: false,
+		    infiniteSlides: false,
+		    stopAtEnd: true,
+    		onInitialized: function(e, slider) {
+				nav = {
+					numPages:slider.pages,
+					current:slider.currentPage,
+					next:function(){slider.goForward();},
+					back:function(){slider.goBack();},
+					first:function(){this.to(1);},
+					last:function(){this.to(this.numPages)},
+					to:function(n){slider.gotoPage(n);}
+				};
+			},
+			
+		}
+		$('#slider').anythingSlider(sliderSettings);
+				if(useSwipe) {
+			var container = $('#container');
+			var vertMode = (pageMode.substr(0,1) == "v");
+			container.swipe({
+				swipe:function(event, direction, distance, duration, fingerCount) {
+					switch(direction) {
+						case "left":
+							if(!vertMode) nav.next();
+							break;
+						case "right":
+							if(!vertMode) nav.back();
+							break;
+						case "up":
+							if(vertMode) nav.next();
+							break;
+						case "down":
+							if(vertMode) nav.back();
+							break;		
+					}
+				}
+			});
+		}
+	});
+</script>
+
+</head>
+
+<body>
+<div id="container">
+<ul class="pages" id="slider">
+
+<!--PAGE i-->
+
+  <li id="i" class="page">
+    <div id="item2" class="pageItem" style="left:36px; top:36px; ">
+      <p class="Intro">copyright</p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="LargeText"><a href="http://www.ars-nova.com">&copy; 2014, Ars Nova Software, LLC</a></p>
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicCaption">Other than use within a licensed copy of Practica Musica &reg; or the Exploring Theory ebook, no part of this book may be reproduced, stored in a retrieval system, or transcribed, in any form or by any means, electronic, mechanical, photocopying, recording, or otherwise, without the prior written permission of the publisher, <a href="http://www.ars-nova.com/">Ars Nova Software</a>, LLC, Box 3370, Redmond, WA 98073.<br /><a href="http://www.ars-nova.com/">www.ars-nova.com.</a> 1st and 2nd editions &copy; 1999, 2000, 2004, 2006, 3rd Edition 2011, 4th Edition 2014. Some material in this<br/>book previously appeared in Windows on Music, &copy; 1989, 1994 Ars Nova Software. ISBN 978-0-929-444-130
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_3.png" style="left:466px; top:436px;" alt="page item"/>
+    <div id="item4" class="pageItem" style="left:959px; top:709px;">
+      <p class="PageNumber">i</p>
+    </div>
+  </li>
+  
+<!--PAGE ii-->
+
+  <li id="ii" class="page">
+    <div id="item5" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="Intro">foreword</p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">This text is designed to accompany the computer program <a href="http://www.ars-nova.com/practica6.html"><span class="Italic">Practica Musica®,</span> </a>version 6 or later, though it can easily<br/>be used alone. Practica Musica supports the text by offering learning activities coordinated with each chapter of the book, helping the student to find the reality behind the abstractions<br/>of pitch, harmony, and rhythm. In addition, there are activities, including even notation tools, for students who want to continue to more advanced topics. However, this book’s<br/>audiovisual examples and interactive quizzes can on their<br/>own provide some of that extra reinforcement and stimulus<br/>and will help to clarify each lesson even without the software.
+        </p>
+        <p class="BasicParagraph">For more information about Practica Musica visit: <br /><a href="http://www.ars-nova.com">www.ars-nova.com.</a>
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%;">
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">The subject matter covered in the text is that of an introductory music theory course, though some chapters will at times go well beyond the essentials of an introduction. Similarly, the software has something for both beginners and more advanced students: the higher levels of play in each activity can be challenging to anyone, while the correction capabilities and friendly patience of the computer should help even the shyest novice.
+        </p>
+        <p class="BasicParagraph">This 4th edition of Exploring Theory contains extensive revisions and additions to the text, and features many new music examples presented as videos. The ability to see music examples animated and played offers exciting new potential for<br/>the student. One aspect of the printed book that could be missed, is the written worksheets, so we have provided those<br/>at ars-nova.com as printable files. Certain tasks, after all, are best done by hand for reasons both practical and aesthetic. Worksheet keys are available through Ars Nova.
+        </p>
+        <p class="BasicParagraph">If students are able to practice their basic skills with the computer there will be more time in class for those things a computer can’t do, which include both discussion with the instructor and group activities such as singing in parts.
+        </p>
+        <p class="BasicParagraph">As before, I’d like to thank the school where I did my graduate work, the University of California at Santa Barbara; it was there in 1986 that the first version of Practica Musica was written, with the aid of a grant from the Office of Instructional Development.
+        </p>
+      </div>
+    </div>
+    <div id="item6" class="pageItem" style="left:959px; top:709px;">
+      <p class="PageNumber">ii</p>
+    </div>
+    
+    <div id="item7" class="pageItem" style="left:39px; top:460px; border:1px; border-style:solid; padding-top:6px">
+      <p class="BasicParagraph" style="display:block; position:absolute; left:11px; top:8px; ">A Practica Musica activity from Chapter 6:</p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_7.png" style="left:48px; top:498px;" alt="page item"/>
+    <div id="item9" class="pageItem" style="left:90px; top:514px;">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 6.1</p>
+    </div>
+    <div id="item8" class="pageItem" style="left:78px; top:550px; padding-left: 11px; text-indent: -10px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Relative Keys:</span> Provide the relative major or minor for<br/>the given key.
+      </p>
+    </div>
+    <div id="item10" class="pageItem" style="left:59px; top:611px;">
+      <p class="ActivityBox">The activities are grouped by chapter in Practica Musica’s Exploring Theory menu.
+      </p>
+    </div>
+  </li>
+
+<!--PAGE iii-->
+
+  <li id="iii" class="page">
+    <div id="item11" class="pageItem" style="left:959px; top:709px; ">
+      <p class="PageNumber">iii</p>
+    </div>
+    <div id="item12" class="pageItem" style="left:36px; top:36px;">
+      <p class="BasicParagraph">I want to give special thanks to Patricia Carbon for her tireless work both in traditional editing tasks and especially in the<br/>work of reshaping Exploring Theory as an ebook production and in selecting, creating and voicing the many new music examples.<br/>Cynthia Dwyer was of great help in transferring the 4th edition to an online format and proofing copy; Paul Tolo provided many hours of expertise in the conversion of the layout and video content for use with html5.
+
+      </p>
+      <p class="BasicParagraph">I would also like to express my appreciation for all those professors and music instructors who have written over the years either with corrections or with new ideas for the text and the software. Both are better for it. – J. Evans
+      </p>
+    </div>
+    
+    <!--img class="pageItem" src="assets/images/item_13.png" style="left:291px; top:181px;" alt="page item"/>
+    <div id="item14" class="pageItem" style="left:297px; top:196px;">
+      <p class="ActivityBoxCenter">This ebook is designed to be read in landscape mode (sideways), which makes the music examples easier to see. It can be viewed in portrait mode if you prefer.
+      </p>
+    </div-->
+  </li>
+  
+<!--intro-->
+
+  <li id="intro" class="page">
+    <div id="item15" class="pageItem" style="left:36px; top:36px;">
+      <div class="textColumn" style="width:48%;">
+        <p class="Intro">introduction</p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">Our object of study is the musical language developed in<br/>Europe over the course of the last 1000 years, particularly<br/>the tonal music that is associated with such composers as<br/>Bach, Mozart and Beethoven and which also forms the basis of<br/>modern popular music. What we want to learn first about this<br/>language of sound is its notation: how to read it and how to<br/>write down what we hear or imagine in a way that can be easily<br/>understood by others. Along the way to musical literacy we’ll<br/>gain some insights into how tonal music came to be, and we’ll<br/>acquire familiarity with its basic materials: the beat, the<br/>measure, major and minor scales, and triads. We’ll study the<br/>way that the basic materials of music are built into melody and<br/>harmony, the way that musical forms arise from those<br/>materials, and describe principles that can help you to write<br/>music of your own. If you take an interest in traditional music<br/>of other cultures, or in western jazz or contemporary music,<br/>you will find that this knowledge retains its usefulness.
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicCaption Italic">From the autograph manuscript of J.S. Bach’s Brandenburg Concerto No. 5</p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_16.png" style="left:528px; top:45px;" alt="page item"/>
+  </li>
+  
+<!--PAGE 1-->
+
+  <li id="1" class="page">
+    <div id="item17" class="pageItem" style="left:36px; top:36px;">
+      <div class="textColumn" style="width:48%;">
+        <a name="page1"><p class="BasicParagraph">Chapter 1</p></a>
+        <p style="width:100%; height:0px; border-top:1px solid;"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="ChapterTitle">Notation of Pitch<br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraphLarge">The two basic elements of music are<br/><span class="Italic">pitch</span> and <span class="Italic">rhythm.</span> "Pitch" refers to the perceived highness or lowness of a note. "Rhythm" refers to the pattern in time made by a series of notes. Standard<br/>music notation provides a simple way to represent both pitch and rhythm.
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="VerySmallBreak"><br />
+          
+        <p class="BasicCaption Italic">The Guidonian hand, named after the 11th century teacher Guido of Arezzo, served as a mnemonic device for learning pitches.
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_18.png" style="left:518px; top:77px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 2-->
+
+  <li id="2" class="page">
+    <div id="item19" class="pageItem" style="left:137px; top:413px; "></div>
+    <div id="item20" class="pageItem" style="left:156px; top:620px; ">
+      <p class="ActivityBox">The distance between a white key and its neighboring black key is always a half step, but the distance between two white keys is not always a whole step. There is no black key between white keys that are a half step apart.
+      </p>
+    </div>
+    <div id="item21" class="pageItem" style="left:156px; top:423px; ">
+      <p class="ActivityHeader">Movie 1.1&nbsp;&nbsp;Whole steps and half steps</p>
+    </div>
+    <div id="item22" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 1</p>
+	<p style="width:49%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      <p class="XLargeText">The Whole Step and Half Step<br />
+      </p>
+    </div>
+    <div id="item23" class="pageItem" style="left:36px; top:149px; ">
+      <div class="textColumn" style="width:49%;">
+        <p class="BasicParagraph">To understand pitch notation it will help to understand the concept of the
+
+		<!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">scale,<span class="custom info" style="width:360px; ">
+        <em>Scale</em>
+        A pattern of steps for filling in the space of an octave (from the Latin word for “ladder”). If you begin playing the piano’s white keys from the note C, the pattern of steps is as follows:
+        <br /><br />
+        <strong class="Bold">W W H W W W H</strong>
+        <br /><br />
+        This scale form is called major, and it’s one of the predominate scales in Western music. If you begin<br/>on the note A the pattern changes to:
+        <br /><br />
+        <strong class="Bold">W H W W H W W</strong>
+        <br /><br />
+        Scales are identified by their beginning note, so a scale beginning on C is either a C major or C minor scale depending on the pattern of whole steps and half steps used.
+        <br /><br />
+        The minor scale has three forms: natural, harmonic and melodic.
+        <br /><br />
+        Other scale forms used in Western music include the whole tone scale, the pentatonic scale and the octatonic scale.
+        </span></a>
+        <!--TOOL TIP END-->
+
+        a set of pitches arranged in a pattern of small and large musical steps. There are various types of scales, each of which follows its own pattern. Standard pitch notation and the white keys of a piano keyboard both evolved to<br/>represent the pattern of large and small steps contained<br/>in the notes A, B, C, D, E, F, G.
+        </p>
+        <p class="BasicBreak"><br /></p>
+      </div>
+      <div class="textColumn" style="width:49%; margin-left:1%;">
+        <p class="BasicParagraph">The small and large steps that form our most familiar scales<br/>are called the 
+        
+        <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">half step<span class="custom info">
+        <em>Half Step</em> 
+        The smallest possible distance between two pitches on the piano, e.g. E-F or F♯ to G. Two half steps make a whole step and there are twelve half steps in an octave. In Western music, the half step is the smallest interval used in any scale.
+        </span></a>
+        <!--TOOL TIP END-->
+        
+        and the 
+        
+        <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">whole step<span class="custom info" style="width:160px; ">
+        <em>Whole Step</em> 
+        The whole step (or whole tone) is an interval equal to two half steps, e.g.<br/>E to F♯ or G to A. The major scale is made up of 5 whole steps and 2 half steps in this order:
+        <br /><br />
+        <strong class="Bold">W W H W W W H</strong>
+        </span></a>.
+        <!--TOOL TIP END-->
+        
+        A half step is the smallest distance between two keys on the piano; a whole step is equal to two half steps. A white key to an adjacent black key is always a half step, but not all white keys are a whole step apart. The piano’s white keys contain two half steps: E-F and B-C, highlighted on the keyboard below. As you have probably noticed, there is no black key between white keys a half step apart, since a half step is the smallest step possible on a piano. The best way to explain these is to let you hear them.
+        </p>
+      </div>
+    </div>
+    <div id="item24" class="pageItem" style="left:945px; top:701px; ">
+      <p class="PageNumber">2</p>
+    </div>
+    <div id="item26" class="pageItem" style="left:156px; top:453px; " alt="page item">
+      <video width="728" height="156" controls="false" poster="assets/images/item_26.png">
+        <source src="assets/media/chap1movie1.1.mp4" type="video/mp4"/>
+        <object width="728" height="156" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.1.mp4"/>
+          <img src="assets/images/item_26.png" width="728" height="156" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 3-->
+
+  <li id="3" class="page">
+    <img class="pageItem" src="assets/images/item_27.png" style="left:134px; top:250px; " alt="page item"/>
+    <div id="item28" class="pageItem" style="left:152px; top:422.5px; ">
+      <p class="ActivityBox">The keyboard’s white keys include only seven pitch classes and their octaves.
+      </p>
+    </div>
+    <div id="item29" class="pageItem" style="left:152px; top:263px; ">
+      <p class="ActivityHeader">Movie 1.2&nbsp;&nbsp;Listen to Octaves</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_30.png" style="left:106px; top:471px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_31.png" style="left:117px; top:484px; " alt="page item"/>
+    <div id="item32" class="pageItem" style="left:365px; top:513px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica </a> Activities 1.1</p>
+    </div>
+    <div id="item34" class="pageItem" style="left:135px; top:550px; padding-left: 15px; ">
+      <p class="ActivityBox">• <span class="Italic">The Keyboard:</span> Experiment with whole steps and half steps. The program will identify any interval.<br />• <span class="Italic">Playing Steps:</span> Play the requested whole step or half step – ascending or descending from a specified pitch.<br />• <span class="Italic">Octaves:</span> Test your ability to recognize the sound of octaves.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_78.png" style="left:335px; top:510px; " alt="page item"/>
+    <div id="item38" class="pageItem" style="left:36px; top:36px; ">
+      <p class="SubChapter">Octaves and Pitch Class</p>
+      <p class="BasicParagraph">You can see in Figure 1 that the white keys of the piano form a pattern of seven letters, A through G, in alphabetical order.<br/>From any starting point, the pattern will begin again at the eighth note, which is an <span class="Italic">octave</span> away from where you started<br/>(octo = eight). The octave of any note sounds like a higher or lower version of the same pitch, so we give it the same letter name.
+      </p>
+      <p class="BasicParagraph">Musicians say notes that are
+      
+      <!--TOOL TIP BEGIN-->
+      <a class="tooltip" href="#">octaves<span class="custom info">
+	  <em>Octaves</em> 
+	  The interval between two notes having the same pitch class, e.g. C to C. All Cs on the keyboard are octaves of each other. A note that’s an octave higher, has twice as many vibrations per second than another note of the same pitch class. A note that’s an octave lower, has half as many vibrations per second than another note of the same pitch class.
+	  </span></a>
+	  <!--TOOL TIP END-->
+      
+      of each other, such as the Fs or the Gs, have the same
+      
+      <!--TOOL TIP BEGIN-->
+      <a class="tooltip" href="#">pitch class<span class="custom info">
+	  <em>Pitch Class</em> 
+	  The set of pitches that differ only in octave. All the Cs or Fs on the keyboard share the same pitch class. The white keys of the piano keyboard include only seven pitch classes.
+	  </span></a>.
+	  <!--TOOL TIP END-->
+
+      The keyboard's white keys really include only seven pitch classes, and all the others are octaves of those seven. This should make your task of learning music seem much easier: a piano may have fifty-two white keys, but they are just the same seven pitch classes repeated in different octaves.
+      </p>
+    </div>
+    <div id="item39" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">3</p>
+    </div>
+    <div id="item40" class="pageItem" style="left:152px; top:289px; " alt="page item">
+      <video width="728" height="124" controls="controls" poster="assets/images/item_40.png">
+        <source src="assets/media/chap1movie1.2.mp4" type="video/mp4"/>
+        <object width="728" height="124" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.2.mp4"/>
+          <img src="assets/images/item_40.png" width="728" height="124" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+
+<!--PAGE 4-->
+
+  <li id="4" class="page">
+    <div id="item41" class="pageItem" style="left:345px; top:185px; ">
+      <p class="ActivityHeader Center">Movie 1.3&nbsp;&nbsp;The major scale</p>
+    </div>
+
+    <div id="item43" class="pageItem" style="left:346px; top:673px; ">
+      <p class="ActivityBoxCenter"><span class="Italic">The steps that make up the major scale<br/>are like unequal rungs of a ladder.</span></p>
+    </div>
+    <div id="item44" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">4</p>
+    </div>
+    <div id="item45" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:30%;">
+        <p class="SubChapter">The Scale</p>
+        <p class="BasicParagraph">If you begin with any piano key and play the keys in order to the next octave, you’ll have played a
+        
+        <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">scale<span class="custom info">
+        <em>Scale</em>
+        A pattern of steps for filling in the space of an octave (from the Latin word for “ladder”). If you begin playing the piano’s white keys from<br/>the note C, the pattern of steps is as follows:
+        <em>W W H W W W H</em>
+        This scale form is called major, and<br/>it’s one of the predominate scales in Western music. If you begin on the note A the pattern changes to:
+        <em>W H W W H W W</em>
+        Scales are identified by their beginning note, so a scale beginning on C is either a C major or C minor scale depending on the pattern of whole steps and half steps used.
+        <br /><br />
+        The minor scale has three forms: natural, harmonic and melodic.
+        <br /><br />
+        Other scale forms used in Western music include the whole tone scale,<br/>the pentatonic scale and the octatonic scale.
+        </span></a>.
+        <!--TOOL TIP END-->
+        
+        Depending on where you begin, the scale will have a different sequence of whole steps and half steps. You could say that <span class="Italic">a scale is a pattern of steps<br/>for filling in the space of an octave</span>.
+        </p>
+        <p class="BasicParagraph">If you play only the white keys from<br/>the note C, the pattern of steps is as follows: <span class="Bold">W W H W W W H</span>. This scale form is called
+        
+        <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">major<span class="custom info" style="width:360px; ">
+		<em>Major</em> 
+		A term used to describe the quality of an interval, scale or chord.
+        <br /><br />
+        Seconds, thirds, sixths and sevenths can be either major or minor. The major form of the interval is one half step larger than its minor form.
+        <br /><br />
+        In a scale, if the third formed between the first note and the third note of a scale contains 4 half steps, the scale is major. If the third contains three half steps, the scale is minor.
+        <br /><br />
+        Likewise, if the bottom third of a triad contains 4 half steps, the chord is major.
+		</span></a>,
+		<!--TOOL TIP END-->
+        
+        and it is one of the most common scales in Western music. Scales are identified by their beginning note, so our scale beginning on C is the C major scale. Since the word “scale” comes from the Latin word for “ladder” you could visualize the scale steps as unequal rungs on a ladder, as shown at right.
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+      </div>
+      <div class="textColumn" style="width:30%; margin-left:5%;">
+        <p class="SubChapter">Solfège</p>
+        <p class="BasicParagraph">
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">Solfège<span class="custom info">
+		<em>Solfège</em> 
+		A teaching method in which pitches are sung using the syllables do, re, mi, fa, sol, la, ti. There are two methods of teaching solfège, fixed do and moveable do. In the first case, the note C is always do. With the moveable do system, do will always represent the first note of the scale (the tonic).
+		</span></a>
+		<!--TOOL TIP END-->
+        
+        is a method of teaching pitch reading by assigning a syllable to each scale step. The solfège syllables are: <br /> <span class="Italic">Do Re Mi Fa Sol La Ti</span>, pronounced
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+      </div>
+      <div class="textColumn" style="width:30%; margin-left:5%;">
+        <p class="BasicParagraph">"dough, ray, mee, fah, sol, lah, tea" (sometimes <span class="Italic">si</span> is used instead of <span class="Italic">ti</span>, and <span class="Italic">sol</span> can also be spelled as <span class="Italic">so</span>). A good way to remember the major scale pattern is to practice singing it with the solfège syllables. In the C major scale, <span class="Italic">do</span> is C, <span class="Italic">re</span> is D, <span class="Italic">mi</span> is E, and so on.<br/>The half steps E-F and B-C use the syllables <span class="Italic">mi-fa </span> and <span class="Italic"> ti-do</span>.
+        </p>
+        <p class="Bold Italic">
+        &nbsp;
+        Do&nbsp;&nbsp;&nbsp;
+        Re&nbsp;&nbsp;&nbsp;
+        Mi&nbsp;&nbsp;&nbsp;
+        Fa&nbsp;&nbsp;&nbsp;
+        Sol&nbsp;&nbsp;&nbsp;
+        La&nbsp;&nbsp;&nbsp;
+        Ti&nbsp;&nbsp;&nbsp;
+        Do
+        </p>
+        <p class="Bold">
+        &nbsp;&nbsp;
+        C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        F&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        G&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        A&nbsp;&nbsp;&nbsp;&nbsp;
+        B&nbsp;&nbsp;&nbsp;&nbsp;
+        C
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="SubSubChapter">Moveable Do and Fixed Do</p>
+        <p class="BasicParagraph">In this book the syllable <span class="Italic">do</span> will always represent the first note of a major scale, a system that is called <span class="Italic">moveable do</span>. So if we start a major scale on<br/>E then E would be called <span class="Italic">do</span>. In France and Italy <span class="Italic">fixed do</span> is traditional; in that system the note C is always called <span class="Italic">do</span>, even if it is not the first note of the current scale. Each system has its advantages, but you’ll find that the moveable <span class="Italic">do</span> system makes it easier<br/>for you to sing the major scale starting<br/>on any pitch.
+        </p>
+      </div>
+    </div>
+    <div id="item46" class="pageItem" style="left:416px; top:210px; " alt="page item">
+      <video width="180" height="460" controls="controls" poster="assets/images/item_46.png">
+        <source src="assets/media/chap1movie1.3.mp4" type="video/mp4"/>
+        <object width="180" height="460" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.3.mp4"/>
+          <img src="assets/images/item_46.png" width="180" height="460" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 5-->
+
+  <li id="5" class="page">
+    <div id="item47" class="pageItem" style="left:36px; top:36px; ">
+	  <div class="textColumn" style="width:48%;">
+        <p class="SubSubChapter">Writing Pitches With Solfège Syllables</p>
+        <p class="BasicParagraph">Most popular melodies can be played on the white keys of the piano, since they usually consist of no more than the seven notes of a single major scale. "My Country, ‘Tis of Thee" consists of seven pitches: <span class="Italic">ti, do, re, mi, fa, so </span> and <span class="Italic"> la</span> in the major scale that starts on C. Watch the piano keys highlight as you listen to the example below:
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">Very few well-known tunes include more than seven pitch classes and many have less, so you could use letters or syllables as a type of music notation. Solfège syllables would be best, since they are the same for any starting note. However, writing this way would be awkward. It wouldn’t tell you the octave of the scale notes referred to, and it wouldn’t show the rhythm of the tune. <span class="Italic">Staff notation</span> is both more graceful and more informative, so we’ll look at that next.
+        </p>
+	  </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_48.png" style="left:44px; top:229px; " alt="page item"/>
+    <div id="item49" class="pageItem" style="left:54px; top:440px; ">
+      <p class="ActivityBox">Many melodies use only the seven pitches of a single scale.
+      </p>
+    </div>
+    <div id="item50" class="pageItem" style="left:54px; top:241px; ">
+      <p class="ActivityHeader">Movie 1.4&nbsp;&nbsp;Playing a melody on the white keys</p>
+    </div>
+    <div id="item51" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">5</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_52.png" style="left:515px; top:58px; " alt="page item"/>
+    <div id="item53" class="pageItem" style="left:537px; top:90px; ">
+      <p class="ReviewHeader">Review 1.1</p>
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:76px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. The two basic elements of music are pitch and rhythm.
+        </p>
+        <p class="ReviewText">2. The basic units of pitch are the half step and the whole step, patterns of which form our common scales, such as the major scale.
+        </p>
+        <p class="ReviewText">3. The major scale can be seen as a repeating pattern 
+          of whole (W) and half (H) steps: <span class="Bold">W W H W W W H</span>. The piano’s white keys C, D, E, F, G, A, B, C follow<br/>this pattern.
+        </p>
+	    <p class="ReviewText">4. Notes with the same letter name are octaves of each other and have a similar sound. Such notes are said to have the same pitch class: all the Cs on the piano have the same pitch class, though they are different in octave.
+	    </p>
+	    <p class="ReviewText">5. Most well-known melodies are limited to the notes<br/>of a single scale, such as the major scale.
+	    </p>
+	  </div>
+    </div>
+    <div id="item54" class="pageItem" style="left:54px; top:271px; " alt="page item">
+      <video width="428" height="160" controls="controls" poster="assets/images/item_54.png">
+        <source src="assets/media/chap1movie1.4.mp4" type="video/mp4"/>
+        <object width="428" height="160" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.4.mp4"/>
+          <img src="assets/images/item_54.png" width="428" height="160" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 6-->
+
+  <li id="6" class="page">
+    <div id="item55" class="pageItem" style="left:36px; top:146px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="BasicParagraph">Staff notation has evolved over the last thousand years to a form that is very efficient for tonal music. It is based on the idea of writing note symbols on a group of horizontal lines that represent the scale. The vertical position of a note identifies the pitch – a higher position means a higher pitch
+        <br />– and the shape of each note tells the rhythm.
+        <br />For now we’ll use only one note shape, the
+        <br /><span class="Italic">whole note</span>.
+        </p>
+        <p class="BasicParagraph">The
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">staff<span class="custom info">
+		<em>Staff</em> 
+		The five horizontal lines on which notes are written in staff notation.<br/>The lines and spaces correspond to<br/>the white keys of the piano.
+		</span></a>
+		<!--TOOL TIP END-->        
+        
+        used today has five lines (originally it was just one and for a while it was four), and notes can be drawn either on a line or on the space between two lines. The lines and spaces refer to the same notes as the white keys of the keyboard, and a
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">clef<span class="custom info">
+		<em>Clef</em> 
+		A staff symbol which provides the key to identifying the pitches represented by each line or space of the staff.<br/>(The word clef translates literally to “key.”) There are several different clef symbols of which the most common are the treble and bass clefs. The treble clef shows the position of<br/>G above middle C, and the bass clef shows the position of F below<br/>middle C.
+		</span></a>
+		<!--TOOL TIP END-->        
+
+        sign is placed at the beginning of the staff to indicate which lines are which.
+        </p>
+		<p class="BasicBreak"><br /></p>
+		<p class="BasicBreak"><br /></p>
+		<p class="BasicBreak"><br /></p>
+		<p class="BasicBreak"><br /></p>
+		<p class="BasicBreak"><br /></p>
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%;">
+        <p class="BasicParagraph">The most common clefs are the G clef and the F clef, usually presented in the treble and bass positions. "Clef" comes from the French word for "key," and you can see that it does act as a key to understanding the staff notation: the G clef circles the line representing the G above “middle C” (the C that is midway between these two clefs) and the two dots of the F clef mark the line used for the F below middle C. Often the treble and bass staves are used together in a combination known as the<br />
+
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">grand staff<span class="custom info">
+		<em>Grand Staff</em> 
+		The treble and bass clef staves joined together and used as a pair. Piano music normally is written using the grand staff.
+		</span></a>,
+		<!--TOOL TIP END-->
+        
+        pictured below.
+        </p>
+      </div>
+    </div>
+    <div id="item56" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">6</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_57.png" style="left:161px; top:513px; " alt="page item"/>
+    <div id="item58" class="pageItem" style="left:256px; top:559px; ">
+      <p class="ActivityBox">Treble G clef,<br/>or treble clef</p>
+      <br/>
+      <p class="ActivityBox">Bass F Clef,<br/>or bass clef</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_59.png" style="left:171px; top:526px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_60.png" style="left:193px; top:544px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_61.png" style="left:377px; top:242px; " alt="page item"/>
+    <div id="item62" class="pageItem" style="left:378px; top:309px; ">
+      <p class="ActivityBoxCenter">Whole Note</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_63.png" style="left:399px; top:252px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_64.png" style="left:416px; top:274px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_65.png" style="left:604px; top:377px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_66.png" style="left:616px; top:411px; " alt="page item"/>
+    <div id="item67" class="pageItem" style="left:622px; top:388px; ">
+      <p class="ActivityHeader">Figure 1.1&nbsp;&nbsp;The Grand Staff</p>
+    </div>
+    <div id="item68" class="pageItem" style="left:622px; top:633px; ">
+      <p class="ActivityBox">The C midway between the treble and bass clefs is called middle C.</span>
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_69.png" style="left:634px; top:425px; " alt="page item"/>
+
+    <div id="item70" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 2</p>
+      <p style="width:35.5%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      <p class="XLargeText">The Staff and its Clefs</p>
+    </div>
+  </li>
+  
+<!--PAGE 7-->
+
+  <li id="7" class="page">
+    <div id="item72" class="pageItem" style="left:36px; top:37px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="SubChapter">Reading Pitches in the Common Clefs</p>
+        <p class="BasicParagraph">Students of music often use mnemonic devices to remember which staff notes are which in the bass and treble clefs.<br/>For example, "<span class="Bold">FACE</span>" and "<span class="Bold">A</span> ll <span class="Bold">C</span>ows <span class="Bold">E</span>at <span class="Bold">G</span>rass" remind<br/>you of the notes for the spaces in the treble and bass clefs." <span class="Bold">E</span>very <span class="Bold">G</span>ood <span class="Bold">B</span>oat <span class="Bold">D</span>oes <span class="Bold">F</span>loat" can be used to remember the lines of the treble clef, and a similar device is illustrated at right for the lines of the bass clef. If you forget these mnemonics just remember that the treble clef circles G<br/>and the bass clef points to F, and that every line and space represents a letter in ascending alphabetical order from<br/>A through G. But the time will soon come when you<br/>recognize each pitch without thinking about it.
+        </p>
+        <p class="BasicParagraph">Remember that the lines and spaces of the staff correspond<br/>to the white keys of the piano! Leaving out the black keys for the moment, if you want to move to the next line or space you move to the next white key and the next letter name, the<br/>sound of which can be either a whole step or a half step higher. For example, from the second line of a treble clef to its second space is the whole step G-A. But the distance from the third<br/>line to the third space is the half step B-C.
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_73.png" style="left:51px; top:578px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_74.png" style="left:59px; top:588px; " alt="page item"/>
+    <div id="item75" class="pageItem" style="left:136px; top:602px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 1.2</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_76.png" style="left:65px; top:629px; " alt="page item"/>
+    <div id="item77" class="pageItem" style="left:85px; top:638; padding-left: 19px; text-indent: -10px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Lines and Spaces:</span> Practice reading the notes of the<br/>treble and bass clefs.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_78.png" style="left:106px; top:598px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_79.png" style="left:577px; top:347px; " alt="page item"/>
+    <div id="item80" class="pageItem" style="left:596px; top:656px; ">
+      <p class="ActivityBox">The lines and spaces of the staff correspond to the white keys of the piano keyboard.</p>
+    </div>
+    <div id="item81" class="pageItem" style="left:596px; top:365px; ">
+      <p class="ActivityHeader"> Movie 1.5&nbsp;&nbsp;The whole step and half step in staff notation</p>
+    </div>
+    <div id="item82" class="pageItem" style="left:594px; top:416px; " alt="page item">
+      <video width="320" height="232" controls="controls" poster="assets/images/item_82.png">
+        <source src="assets/media/chap1movie1.5.mp4" type="video/mp4"/>
+        <object width="320" height="232" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.5.mp4"/>
+          <img src="assets/images/item_82.png" width="320" height="232" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <img class="pageItem" src="assets/images/item_83.png" style="left:566px; top:48px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_84.png" style="left:573px; top:85px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_85.png" style="left:583px; top:94px; " alt="page item"/>
+    <div id="item86" class="pageItem" style="left:581px; top:62px; ">
+      <p class="ActivityHeader">Figure 1.2&nbsp;&nbsp;Remembering note names
+      </p>
+    </div>
+    <div id="item87" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">7</p>
+    </div>
+  </li>
+  
+<!--PAGE 8-->
+
+  <li id="8" class="page">
+    <div id="item88" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="SubChapter">Ledger Lines</p>
+        <p class="BasicParagraph">What if you want to write a pitch that is higher or lower than the staff’s five lines allow? You could change to a different clef (see <span style="color:red;">The C Clef</span>), but in most cases it is simpler to add a
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">ledger line<span class="custom info">
+		<em>Ledger Line</em> 
+		A short line that extends the range of the staff upward or downward. Multiple ledger lines are used to write notes that extend way above or below the staff. Composers will opt to change clefs if too many ledger lines are required.
+		</span></a>
+		<!--TOOL TIP END-->
+
+        (sometimes spelled <span class="Italic">leger</span>), which is an extension of the staff system. To write a note that is higher or lower than the limits of the staff you add more lines, but you make them short – just a little wider than the note, as shown at right. Notes on the lines and spaces made with ledger lines correspond to the white keys of the keyboard just as staff notes do.
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="SubChapter">Middle C</p>
+        <p class="BasicParagraph">The first C below the treble clef staff is called "middle C" because it is between the treble and bass clefs, but middle C is also approximately in the center of a full-size piano. Middle C has one ledger line, whether it is part of the treble staff and appearing below it, or part of the bass staff and appearing<br/>above it.
+        </p>
+        <p class="BasicParagraph">Ledger lines provide a good way to extend the reach of the staff without making it much harder to read (the alternative would be to add more lines to the staff, which might confuse the eye). You’ll find that notes written with several ledger lines quickly become familiar.
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_89.png" style="left:570px; top:60px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_90.png" style="left:585px; top:98px; " alt="page item"/>
+    <div id="item91" class="pageItem" style="left:584px; top:73px; ">
+      <p class="ActivityHeader">Figure 1.3&nbsp;&nbsp;Whole notes with ledger lines</p>
+    </div>
+    <div id="item92" class="pageItem" style="left:584px; top:298px; ">
+      <p class="ActivityBox">Ledger lines are a continuation of the staff.</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_93.png" style="left:595px; top:353px; " alt="page item"/>
+    <div id="item94" class="pageItem" style="left:605px; top:366px; ">
+      <p class="ActivityHeader">Figure 1.4&nbsp;&nbsp;Middle C has one ledger line. It is written below the treble staff or above the bass staff.</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_95.png" style="left:605px; top:434px; " alt="page item"/>
+    <div id="item96" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">8</p>
+    </div>
+  </li>
+
+<!--PAGE 9-->
+
+  <li id="9" class="page">
+    <div id="item97" class="pageItem" style="left:36px; top:37px; ">
+      <p class="BasicParagraph">Ledger lines are needed above and below the staff to notate this two-octave C major scale. The scale in the treble clef staff begins on middle C and the scale in the bass clef staff ends on middle C.
+      </p>
+    </div>
+    <div id="item98" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">9</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_99.png" style="left:288px; top:555px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_100.png" style="left:295px; top:566px; " alt="page item"/>
+    <div id="item101" class="pageItem" style="left:353px; top:580px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 1.3</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_102.png" style="left:302px; top:607px; " alt="page item"/>
+    <div id="item103" class="pageItem" style="left:312px; top:616px; padding-left: 19px; text-indent: -10px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Reading with Ledger Lines:</span> Practice reading the notes<br/>above and below the staff.
+      </p>
+    </div>
+
+    <img class="pageItem" src="assets/images/item_97a.png" style="left:166px; top:121px; " alt="page item"/>
+
+    <img class="pageItem" src="assets/images/item_104.png" style="left:323px; top:576px; " alt="page item"/>
+
+    <div id="item106" class="pageItem" style="left:179px; top:452px; ">
+      <p class="ActivityBox">The scale in the bass clef staff is two octaves below the scale in the treble clef staff.<br/>The note “C” appears in five different octaves.
+      </p>
+    </div>
+    
+    <div id="item107" class="pageItem" style="left:179px; top:132px; ">
+      <p class="ActivityHeader">Movie 1.6&nbsp;&nbsp;Ledger lines</p>
+    </div>
+    <div id="item108" class="pageItem" style="left:178px; top:160px; " alt="page item">
+      <video width="692" height="288" controls="controls" poster="assets/images/item_108.png">
+        <source src="assets/media/chap1movie1.6.mp4" type="video/mp4"/>
+        <object width="692" height="288" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.6.mp4"/>
+          <img src="assets/images/item_108.png" width="692" height="288" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 10-->
+
+  <li id="10" class="page">
+    <div id="item109" class="pageItem" style="left:36px; top:37px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="SubSubChapter">Notating a Melody in The Treble Clef Staff</p>
+        <p class="BasicParagraph">Though we haven’t learned to notate rhythms yet, we do know how to notate pitches on the staff. For Movie 1.7 we’ve arranged the seven melody notes of "My Country ‘Tis of Thee"</span> on the staff from lowest to highest so that they are in the same order as the piano’s white keys. The melody begins on C. Follow along as the melody notes highlight.</p>
+		
+        <p class="SubChapter">The C Clef</p>
+        <p class="BasicParagraph">To avoid the use of ledger lines composers sometimes use clefs other than treble G and bass F. The most common of these is the
+        <!--TOOL TIP BEGIN-->
+        <a class="tooltip" href="#">C clef.<span class="custom info" style="width:360px; ">
+        <em>C clef</em> 
+ A clef used to show the position of middle C on the staff.<br/>It's most commonly found in the alto or tenor positions (middle line or fourth line up). The soprano, mezzo and baritone forms of the C clef are mostly of historical interest today. 
+   </span></a>
+        <!--TOOL TIP END--> 
+
+          The C clef points to middle C, and can be placed on any of the five lines of the staff. When placed on the middle line it's called the <span class="Italic">alto clef</span>, and is the traditional clef used in music for the viola. The <span class="Italic">tenor</span> C clef is sometimes found in music for the cello, bassoon, or trombone. The <span class="Italic">soprano, mezzo,</span> and <span class="Italic">baritone</span> forms of the C clef are mostly of historical interest today. Figure 1.5 shows all the C clefs.
+        </p>
+        
+        <p class="SubChapter">The Octava G Clef</p>
+        <p class="BasicParagraph">The G clef can be drawn with an "8" above or below to indicate that it is an octave higher or lower than its normal treble position. The lower position makes a convenient substitute<br/>for the alto or tenor C clefs, and is often used in their place in modern music. It covers almost the same range as the alto and tenor clefs, but can be easily read by anyone who knows the treble clef. In the illustration at right it is followed by a whole note on middle C.
+        </p>
+      </div>
+    </div>
+    <div id="item110" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">10</p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_116.png" style="left:515px; top:37px; " alt="page item"/>
+    <div id="item117" class="pageItem" style="left:527px; top:47px; ">
+      <p class="ActivityHeader">Movie 1.7&nbsp;&nbsp;The seven pitches of "My Country ‘Tis of Thee"</p>
+    </div>
+    <div id="item118" class="pageItem" style="left:527px; top:74px; " alt="page item">
+      <video width="448" height="148" controls="controls" poster="assets/images/item_118.png">
+        <source src="assets/media/chap1movie1.7.mp4" type="video/mp4"/>
+        <object width="448" height="148" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.7.mp4"/>
+          <img src="assets/images/item_118.png" width="448" height="148" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_111.png" style="left:529px; top:260px; " alt="page item"/>
+    <div id="item112" class="pageItem" style="left:541px; top:271px; ">
+      <p class="ActivityHeader">Figure 1.5&nbsp;&nbsp;Variations of the C clef</p>
+    </div>
+    <div id="item114" class="pageItem" style="left:541px; top:441px; ">
+      <p class="ActivityBox"> Each of these clefs show the position of middle C</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_115.png" style="left:541px; top:296px; " alt="page item"/>
+
+    <img class="pageItem" src="assets/images/item_113.png" style="left:553px; top:485px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_119.png" style="left:738px; top:535px; " alt="page item"/>
+    <div id="item120" class="pageItem" style="left:566px; top:501px; ">
+      <p class="ActivityHeader">Figure 1.6&nbsp;&nbsp;The octava G clef</p>
+    </div>
+    <div id="item121" class="pageItem" style="left:566px; top:543px; ">
+      <p class="ActivityBox">The "8" below the clef indicates that the pitch is to be played an octave lower than written.</p>
+    </div>
+  </li>
+  
+<!--PAGE 11-->
+
+  <li id="11" class="page">
+    <div id="item122" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="BasicBreak"><br /></p>
+        <p class="SubSubChapter">Writing Music by Hand</p>
+        <p class="BasicParagraph">Even though computers can do an excellent job of printing music there will be many times when you will need to be able to write it by hand. This skill is particularly useful if you happen to think of a nice melody idea at a time when all you have to work with is a paper and pencil. There’s also a certain pleasure to be found in writing music by hand, which you can discover as you gain skill. Finally, writing music exercises by hand is a good way to help you learn the material.
+        </p>
+        <p class="BasicParagraph">Remember that everyone has an individual style of handwriting, and yet the symbols need to be easily recognizable by others. When you're first beginning, it's best to follow a model; later you can go more quickly and you’ll find that your own style will develop naturally.
+       </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_123.png" style="left:518px; top:71px; " alt="page item"/>
+    <div id="item124" class="pageItem" style="left:541px; top:104px; ">
+      <p class="ReviewHeader">Review 1.2</p>
+
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+
+	  <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. Pitches are notated on a five-line staff whose lines and spaces correspond to the major scale pattern, which also matches the white keys of the piano.
+        </p>
+        <p class="ReviewText">2. The clefs drawn on a staff tell which lines or spaces are which. The treble G clef circles the note G above middle C, the bass F clef marks the note F below middle C.
+        </p>
+        <p class="ReviewText">3. Ledger (or leger) lines are short extensions of the staff that are used to write notes that go above or below the range of the current clef.
+        </p>
+        <p class="ReviewText">4. The C clefs mark middle C; the most common<br/>C clefs are the alto C clef and the tenor C clef.
+        </p>
+        <p class="ReviewText">5. The octava G clef is a treble clef with an "8" above or below; it marks a G one octave higher or lower than that of the treble clef, and in the low form makes a good substitute for the alto and tenor 
+        C clefs.
+        </p>
+      </div>
+    </div>
+    <div id="item125" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">11</p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_126.png" style="left:131px; top:434px; " alt="page item"/>
+    <div id="item127" class="pageItem" style="left:144px; top:444px; ">
+      <p class="ActivityHeader">Gallery 1.1&nbsp;&nbsp;Drawing Clefs</p>
+    </div>
+    
+    <a href="ss1/index.html" onclick="return hs.htmlExpand(this, { wrapperClassName: 'no-footer', objectType: 'iframe', width: 382, height: 388, objectLoadTime: 'after'} )">
+    	<img class="pageItem" src="assets/images/item_128.png" style="left:142px; top:468px; " alt="page item"/>
+    </a>
+    
+    <div class="pageItem" style="left:172px; top:624px; ">
+    <p class="ActivityHeader">
+		<a href="ss1/index.html" class="button V14" style="display: block; width: 180px; " onclick="return hs.htmlExpand(this, { wrapperClassName: 'no-footer', objectType: 'iframe', width: 382, height: 388, objectLoadTime: 'after'} )">View Slideshow</a>
+    </p>
+    </div>
+    
+    <!--div id="item129" class="pageItem" style="left:144px; top:614px; ">
+      <p class="ActivityBox">The treble G clef circles the second line to show the position of G above middle C.
+      </p>
+    </div-->
+    <!--div id="item130" class="pageItem" style="left:131px; top:681px; ">
+      <p class="autoParaStyle2">dots go here</p>
+    </div-->
+  </li>
+
+<!--PAGE 12-->
+
+  <li id="12" class="page">
+    <div id="item131" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">12</p>
+    </div>
+    <div id="item132" class="pageItem" style="left:36px; top:36px; ">
+      <p class="BasicParagraph">Section 3</p>
+      <p style="width:40.5%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      <p class="XLargeText">Origins of the Black Keys</p>
+    </div>
+    <div id="item133" class="pageItem" style="left:36px; top:70px; ">
+      <div class="textColumn" style="width:48%;">
+      <p class="BasicBreak"><br /></p>
+      <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">The earliest keyboards had only white keys, since they were designed to play a limited pattern of scale steps that corresponds to the notes we use today for the C major scale.
+        </p>
+        <p class="BasicParagraph">But if your keyboard has only white keys, what happens if you want to play the major scale starting on some other note, like F? This would be called
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">transposing<span class="custom info">
+		<em>Transposing</em> 
+		An altered version of a passage or composition that is either higher or lower in pitch. A song, for instance, can be transposed to another key so that all of its pitches are either higher or lower, making it easier to sing.
+		</span></a>
+		<!--TOOL TIP END-->
+        
+        the major scale pattern to F. If you have only the white keys to work with you’ll run into trouble on the step between your third and fourth notes<br/>(A and B) it will make a whole step instead of the required half step. But you can fix your keyboard by adding another key whose pitch is midway between A and B. Then the major scale on F can be played as shown in Movie 1.8.
+        </p>
+        <p class="BasicParagraph">Since the fourth note of the scale was going to be named B we will say that this lowered version is still a kind of B: it is
+        </p>
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%;">
+        <p class="BasicParagraph">"B flat," a B played a half step lower than its unaltered form.<br/>In fact, this was the first black key to be added to the keyboard, and that’s how the flat symbol came to resemble a small "b": early composers wrote the higher form of B (the one on the white key) with square edges (<img id="item133_0_0" src="assets/images/item133_0_0.png" alt="inline image" style="margin-right:4px; margin-left:4px;" />) and the lower form with rounded edges (<span class="BasicParagraph">♭</span>). They called the higher form "hard"<br/>(B durum) while the lower one played on the black key was "soft" (B molle). You may recognize the "hard B" symbol as the precursor of the modern natural sign (<span class="BasicParagraph">♮</span>) which is now used to indicate a note played in its unaltered form, on the white keys. Another possible descendant of the former "hard B" sign is the sharp (<span class="BasicParagraph">♯</span>) which is used for notes that are raised a half step.
+        </p>
+        <p class="BasicParagraph">Soon black keys were added to fill in every whole step on the keyboard; they allow you to play major or minor scales or melodies beginning on any note you choose. The black keys ended up grouped in threes and twos because the original<br/>white keyboard had half steps between E and F and between<br/>B and C — a black key was not needed in those places.
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_135.png" style="left:210px; top:510px; " alt="page item"/>
+    <div id="item136" class="pageItem" style="left:236px; top:681px; ">
+      <p class="ActivityBox">The black keys fill in the whole steps on the keyboard and allow you to play scales<br/>or melodies beginning on any note you choose.
+      </p>
+    </div>
+    <div id="item137" class="pageItem" style="left:236px; top:523px; ">
+      <p class="ActivityHeader">Movie 1.8&nbsp;&nbsp;Playing the F major scale</p>
+    </div>
+    <div id="item138" class="pageItem" style="left:236px; top:551px; " alt="page item">
+      <video width="532" height="124" controls="controls" poster="assets/images/item_138.png">
+        <source src="assets/media/chap1movie1.8.mp4" type="video/mp4"/>
+        <object width="532" height="124" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.8.mp4"/>
+          <img src="assets/images/item_138.png" width="532" height="124" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+  </li>
+  
+<!--PAGE 13-->
+
+  <li id="13" class="page">
+    <div id="item139" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">13</p>
+    </div>
+    <div id="item140" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="SubChapter">Using Accidentals</p>
+        <p class="BasicParagraph">The signs for the sharp and flat are placed before the note they affect, on the same line or space as the note head, and when placed this way are called
+
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">accidentals<span class="custom info">
+		<em>Accidentals</em> 
+		A sign used to raise or lower a note without changing its letter name. An accidental stays in effect until the next bar line is reached. The five accidental signs, natural, flat, sharp, double flat and double sharp, are shown below.
+		</span></a>,
+		<!--TOOL TIP END-->
+        
+        though of course they are actually put there on purpose. A
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">sharp<span class="custom info">
+		<em>Sharp</em> 
+		A sign, ♯, used to raise a note by one half step. A double sharp raises a note two half steps. A sharp that is not part of the key signature is an accidental.
+		</span></a>
+		<!--TOOL TIP END-->
+
+        before a note raises it a half step; a
+
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">flat<span class="custom info">
+		<em>Flat</em> 
+		A sign, ♭, used to lower a note one half step. A double flat, lowers a note two half steps. A flat that’s not in the key signature is an accidental.
+		</span></a>
+		<!--TOOL TIP END-->
+        
+        lowers it by a half step.
+        </p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">In most cases a sharp or flat will put you on a black key, but not always. Notice, for example, that a C flat will be played on the same key as B (since B is a half step lower than C). The 
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">natural<span class="custom info">
+		<em>Natural</em> 
+		The accidental sign, ♮, used to naturalize a note that had been sharped or flatted.
+		</span></a>
+		<!--TOOL TIP END-->
+        
+        sign reminds you that a note is to be played in its natural form, on the white key that bears its name.
+        </p>
+      </div>
+      <div class="textColumn" style="width:48%; margin-left:3%;">
+        <p class="BasicBreak"><br /></p>
+        <p class="BasicParagraph">There are times when you need to sharp a note that is already sharped, while keeping the same letter name, or to flat a note that is already flat. For those unusual cases we have the<br />
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">double sharp<span class="custom info">
+		<em>Double Sharp</em> 
+		The accidental sign that raises a note by two half steps.
+		</span></a>
+		<!--TOOL TIP END-->
+
+        and the
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">double flat<span class="custom info">
+		<em>Double Flat</em> 
+		The accidental sign that lowers a note by two half steps. 
+		</span></a>,
+		<!--TOOL TIP END-->
+        
+        which raise and lower<br/>a note by two half steps (see Figure 1.7).
+        </p>
+      </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_141.png" style="left:81px; top:203px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_142.png" style="left:92px; top:241px; " alt="page item"/>
+    <div id="item143" class="pageItem" style="left:93px; top:215px; ">
+      <p class="ActivityHeader">Figure 1.7&nbsp;&nbsp;Accidentals</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_144.png" style="left:286px; top:568px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_145.png" style="left:294px; top:578px; " alt="page item"/>
+    <div id="item146" class="pageItem" style="left:332px; top:592px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 1.4</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_147.png" style="left:300px; top:618px; " alt="page item"/>
+    <div id="item148" class="pageItem" style="left:300px; top:628px; padding-left: 19px; text-indent: -10px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">The Major Scale:</span> Try playing major scales starting on different pitches. Remember to follow the major scale<br/>pattern: WWHWWWH.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_149.png" style="left:301px; top:588px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_150.png" style="left:522px; top:201px; " alt="page item"/>
+    <div id="item151" class="pageItem" style="left:535px; top:210px; ">
+      <p class="ActivityHeader">Figure 1.8&nbsp;&nbsp;Sharps and flats are not always on black keys.</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_152.png" style="left:536.5px; top:237px; " alt="page item"/>
+  </li>
+  
+<!--PAGE 14-->
+
+  <li id="14" class="page">
+    <div id="item153" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">14</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_154.png" style="left:513px; top:513px; " alt="page item"/>
+    <img class="pageItem" src="assets/images/item_155.png" style="left:520px; top:523px; " alt="page item"/>
+    <div id="item156" class="pageItem" style="left:559px; top:538px; ">
+      <p class="ActivityHeader">Suggested <a target="_blank" href="http://www.ars-nova.com/practica6.html">Practica Musica</a> Activities 1.5</p>
+    </div>
+    <img class="pageItem" src="assets/images/item_157.png" style="left:527px; top:564px; " alt="page item"/>
+    <div id="item158" class="pageItem" style="left:533px; top:574px; padding-left: 19px; text-indent: -10px; ">
+      <p class="ActivityBox">
+      • <span class="Italic">Treble Clef Accidentals:</span> Practice reading accidentals<br/>in the treble clef.
+      </p>
+    </div>
+    <img class="pageItem" src="assets/images/item_159.png" style="left:528px; top:533px; " alt="page item"/>
+    <div id="item160" class="pageItem" style="left:36px; top:50px; ">
+      <p class="SubChapter">Enharmonic Equivalents</p>
+      <p class="BasicParagraph">The names of the black keys vary according to how you’re using them: the one between F and G, for example, may be called F sharp, an F raised one half step, or it may be called G flat, a G lowered one half step. In fact, all of the piano’s keys can be identified by more than one name.
+      </p>
+      <p class="BasicParagraph">How do you know which name to use for a note that can have several? It depends on the context of the melody and harmony. If you are playing a melody based on the major scale starting on D, the third note of the scale must be some kind of F. (Remember that scale steps follow the alphabet.) Since the third note needs to be played a half step higher than the natural F, we name it F sharp. G flat would sound the same on a piano, but G flat doesn’t belong in the D major scale, and using it would imply a different harmony. F sharp and G flat are examples of
+      
+      <!--TOOL TIP BEGIN-->
+	  <a class="tooltip" href="#">enharmonic equivalents<span class="custom info">
+	  <em>Enharmonic Equivalents</em> 
+	  Two notes, intervals, or chords that are spelled differently but sound the same on the piano. Examples: F♯ and G♭, major third and diminished fourth, German augmented sixth chord and dominant seventh chord.
+	  </span></a>
+	  <!--TOOL TIP END-->      
+      
+      – pitches that have different names but which are played on the same piano key. In theory, enharmonic equivalents are not exactly the same pitch, but for convenience we tune the piano so that the same key can play both.
+      </p>
+    </div>
+    
+    <img class="pageItem" src="assets/images/item_161.png" style="left:510px; top:89px; " alt="page item"/>
+    <div id="item162" class="pageItem" style="left:525px; top:151px; " alt="page item">
+      <video width="424" height="196" controls="controls" poster="assets/images/item_162.png">
+        <source src="assets/media/chap1movie1.9.mp4" type="video/mp4"/>
+        <object width="424" height="196" type="application/x-shockwave-flash" data="assets/media/flashmediaelement.swf">
+          <param name="movie" value="assets/media/flashmediaelement.swf"/>
+          <param name="allowFullScreen" value="true"/>
+          <param name="wmode" value="transparent"/>
+          <param name="flashvars" value="controls=true&file=chap1movie1.9.mp4"/>
+          <img src="assets/images/item_162.png" width="424" height="196" title="No video playback capabilities"/>
+        </object>
+      </video>
+    </div>
+    <div id="item163" class="pageItem" style="left:525px; top:353px; ">
+      <p class="BasicParagraph">Just as the words <span class="Italic">hare</span> and <span class="Italic">hair</span> sound the same but have different meanings, these notes sound the same when<br/>played on the keyboard, but are not used interchangeably.
+      </p>
+    </div>
+    
+    <div id="item164" class="pageItem" style="left:525px; top:97px; ">
+      <p class="ActivityHeader">Movie 1.9&nbsp;&nbsp;Enharmonic equivalents</p>
+      <p class="SmallText">
+      &nbsp;&nbsp;&nbsp;C sharp/D flat
+      &nbsp;&nbsp;&nbsp;&nbsp;E/F flat
+      &nbsp;&nbsp;&nbsp;&nbsp;G sharp/A flat
+      &nbsp;&nbsp;&nbsp;B/C flat
+      &nbsp;&nbsp;&nbsp;D sharp/E flat
+      </p>
+    </div>
+  </li>
+
+<!--PAGE 15-->
+
+  <li id="15" class="page">
+    <div id="item165" class="pageItem" style="left:945px; top:702px; ">
+      <p class="PageNumber">15</p>
+    </div>
+    <div id="item166" class="pageItem" style="left:36px; top:36px; ">
+      <div class="textColumn" style="width:48%;">
+        <p class="BasicBreak"><br /></p>
+        <p class="SubChapter">Diatonic vs. Chromatic</p>
+        <p class="BasicParagraph">You will sometimes need to know the difference between the
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">diatonic<span class="custom info">
+		<em>Diatonic</em> 
+		A half step in which the letter name changes, e.g. C♯ to D. All of the half steps in the major and minor scales are diatonic half steps.
+		</span></a>
+		<!--TOOL TIP END-->
+
+        half step and the        
+        
+        <!--TOOL TIP BEGIN-->
+		<a class="tooltip" href="#">chromatic<span class="custom info">
+		<em>Chromatic</em> 
+		A half step in which the letter<br/>name does not change, e.g. C to C♯.<br/>A chromatic scale contains chromatic half steps as opposed to a diatonic scale which contains only diatonic<br/>half steps.
+		</span></a>
+		<!--TOOL TIP END-->
+        
+        half step. The diatonic half step is the one found in the major scale; it is always spelled with a change in letter name, such as E to F, or A to B. The chromatic half step is one in which the letter name stays the same, such as C to C♯, or B♭ to B natural. Although C to C♯ and C to D♭ look like the same half step on the piano, the difference in spelling has different musical implications.<br/>See Chapter 5 for more on the subject of enharmonic equivalents.
+        </p>
+        </div>
+    </div>
+    <img class="pageItem" src="assets/images/item_167.png" style="left:518px; top:71px; " alt="page item"/>
+    <div id="item168" class="pageItem" style="left:545px; top:104px; ">
+      <p class="ReviewHeader">Review 1.3</p>
+      
+      <p style="width:100%; height:0px; border-top:1px solid; margin-bottom:8px;"><br /></p>
+      
+      <div class="pageItem" style="left:0px; top:79px; padding-left: 22px; text-indent: -18px; ">
+        <p class="ReviewText">1. Sharps and flats are used to raise or lower the pitch of a note by one half step. A natural sign means to play the note in its unaltered form, corresponding to a white key on the piano. Sharps and flats make it possible to play a given scale beginning on any note.
+        </p>
+        <p class="ReviewText">2. Sharps and flats are not necessarily black keys:<br/>for example, the piano key used to play B♮ can<br/>also be called C♭.
+        </p>
+        <p class="ReviewText">3. Enharmonic equivalents are pitches that have different names but are played on the same<br/>piano key.
+        </p>
+        <p class="ReviewText">4. A diatonic half step is one whose letter name changes, such as A to B♭. A chromatic half step repeats the same letter, as in A to A♯.
+        </p>
+      </div>
+    </div>
+    
+    <div class="pageItem" style="left:590px; top:696px; "">
+<a href="C02.html" class="button V14" style="display: block; margin-left: auto; margin-right: auto; width: 320px; ">Continue To Chapter 2 &nbsp;&nbsp;&nbsp; >></a>
+    </div>
+    
+  </li>
+</ul>
+
+<script type="text/javascript">$('video,audio').mediaelementplayer({pluginPath:'assets/media/',iPadUseNativeControls:true, iPhoneUseNativeControls:true, AndroidUseNativeControls:true});</script>
+
+<div class="NaviBar"><img src="assets/images/NaviBar.png"></div>
+<div class="NaviBarText">
+		  <a class="NaviBarLink" href="TOC.html#toc1">Contents</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#ii">Foreword</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#intro">Introduction</a>
+		  &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C01.html#1">1</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C02.html">2</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C03.html">3</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C04.html">4</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C05.html">5</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C06.html">6</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C07.html">7</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C08.html">8</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C09.html">9</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C10.html">10</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C11.html">11</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C12.html">12</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C13.html">13</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C14.html">14</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="C15.html">15</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="glossary.html">Glossary</a>
+          &nbsp;&nbsp;&nbsp; <a class="NaviBarLink" href="keywords.html">Index</a>
+</div>
+
+</div>
+
+</body>
+</html>
